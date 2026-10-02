@@ -1,0 +1,102 @@
+{
+  "mujoco": "3.14.0",
+  "source_mass_kg": 169.0419410325263,
+  "commanded_joints": 17,
+  "drive_mode": "contact-based equivalent mecanum friction",
+  "simulation_elbow_lower_degrees": -135.0,
+  "simulation_elevator_upper_m": -0.0142,
+  "startup_linear_actuator_m": -0.0142,
+  "startup_elbows_rad": {
+    "left": -1.79,
+    "right": -1.79
+  },
+  "drive": {
+    "forward": {
+      "duration_s": 2,
+      "normalized_command": [
+        0.5,
+        0,
+        0
+      ],
+      "displacement_m": [
+        0.5725967683826443,
+        5.466790400619884e-06,
+        7.954001415844125e-09
+      ],
+      "yaw_degrees": 0.000593630073819429,
+      "wheel_rates_rad_s": [
+        5.698276079524861,
+        -5.698275897359852,
+        5.697733863897103,
+        -5.697733948413843
+      ],
+      "warnings": {}
+    },
+    "left": {
+      "duration_s": 2,
+      "normalized_command": [
+        0,
+        0.5,
+        0
+      ],
+      "displacement_m": [
+        -0.007034806863598646,
+        0.5699590674374607,
+        7.960581430155322e-09
+      ],
+      "yaw_degrees": 0.37920860362203723,
+      "wheel_rates_rad_s": [
+        -5.698022241635172,
+        -5.697987925790178,
+        5.697989459868685,
+        5.698020796581756
+      ],
+      "warnings": {}
+    },
+    "yaw": {
+      "duration_s": 2,
+      "normalized_command": [
+        0,
+        0,
+        0.5
+      ],
+      "displacement_m": [
+        0.0009378051686161069,
+        -0.00012797687754779883,
+        5.811466266547605e-09
+      ],
+      "yaw_degrees": 87.89979239845553,
+      "wheel_rates_rad_s": [
+        -4.471990608811001,
+        -4.478119712599927,
+        -4.472248162527162,
+        -4.478419303345504
+      ],
+      "warnings": {}
+    }
+  },
+  "ik": {
+    "left": {
+      "error_m": 3.925310794906626e-05,
+      "converged": true,
+      "dynamic_error_m": 3.9253108702403495e-05
+    },
+    "right": {
+      "error_m": 4.001020885659151e-05,
+      "converged": true,
+      "dynamic_error_m": 4.001020869453031e-05
+    }
+  },
+  "gripper_pad_clearance_m": {
+    "left": {
+      "-5": 0.0010591639464950734,
+      "0": 0.007179682507421735,
+      "60": 0.034685201891699886
+    },
+    "right": {
+      "-5": 0.0010591640940570786,
+      "0": 0.007179682629997894,
+      "60": 0.0346852017452122
+    }
+  }
+}
