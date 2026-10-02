@@ -3,6 +3,8 @@
 A runnable simulation of the full Sourccey assembly: both arms, wrists, grippers,
 shoulder elevator, and four driven mecanum wheels.
 
+Licensed under the [MIT License](LICENSE). Copyright (c) 2026 Vulcan Robotics.
+
 ![Sourccey in MuJoCo](docs/preview.png)
 
 ## Run
