@@ -7,10 +7,10 @@ from .control import HandTarget, finite_vector, gripper_degrees, wheel_rates
 
 
 class Simulation:
-    def __init__(self, full_elevator_range=False, traction=True):
+    def __init__(self, full_elevator_range=False, traction=True, model=None):
         if not MODEL.exists():
             build()
-        self.model = mujoco.MjModel.from_xml_path(str(MODEL))
+        self.model = model if model is not None else mujoco.MjModel.from_xml_path(str(MODEL))
         self.data = mujoco.MjData(self.model)
         self.ik_data = mujoco.MjData(self.model)
         self.full_elevator_range = full_elevator_range

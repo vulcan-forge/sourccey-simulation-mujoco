@@ -624,6 +624,8 @@
                                 <geom name="collision_Motor_6_cap_v1_1_0" type="mesh" mesh="mesh_120" pos="0 0 0" quat="-0.707106780053 -5.94762300547e-14 -5.61394183471e-14 0.70710678232" contype="2" conaffinity="1" group="3" friction="0.7 0.005 0.0001" rgba="0.8 0.4 0.1 0.25" />
                               </body>
                               <site name="left_ee" pos="0 0 0" size="0.008" rgba="0.1 0.9 0.3 1" group="4" />
+                              <camera name="wrist_left" mode="fixed" pos="0.0433844312805 0.0328842995011 -0.0227424266302" quat="0.548527329173 -0.0307332828397 -0.816476577643 -0.177592884531" fovy="34.2323408322" />
+                              <site name="camera_mount_wrist_left" pos="0.0433844312805 0.0328842995011 -0.0227424266302" type="sphere" size="0.003" rgba="0.1 0.9 0.5 1" group="5" />
                             </body>
                           </body>
                         </body>
@@ -755,6 +757,8 @@
                                 <geom name="collision_Motor_6_cap_v1_2_0" type="mesh" mesh="mesh_154" pos="0 0 0" quat="1.79489651492e-09 -1.37751762e-13 7.20497402502e-17 1" contype="2" conaffinity="1" group="3" friction="0.7 0.005 0.0001" rgba="0.8 0.4 0.1 0.25" />
                               </body>
                               <site name="right_ee" pos="0 0 0" size="0.008" rgba="0.1 0.9 0.3 1" group="4" />
+                              <camera name="wrist_right" mode="fixed" pos="-0.0337496180065 -0.0439691205963 -0.0256818211052" quat="-0.267953643599 0.673658138779 -0.514013364446 -0.458449362644" fovy="34.2323408322" />
+                              <site name="camera_mount_wrist_right" pos="-0.0337496180065 -0.0439691205963 -0.0256818211052" type="sphere" size="0.003" rgba="0.1 0.9 0.5 1" group="5" />
                             </body>
                           </body>
                         </body>
@@ -835,6 +839,12 @@
         <geom name="visual_LCD_Pocket_v1_1_0" type="mesh" mesh="mesh_170" pos="0 0 0" quat="0.379409522634 -0.120590477536 0.049950211302 0.915975614988" contype="0" conaffinity="0" group="2" rgba="0.64 0.68 0.72 1" />
       </body>
       <geom name="chassis_collision" type="box" pos="0 0 0.035" size="0.16 0.16 0.055" contype="2" conaffinity="1" group="3" rgba="0.9 0.5 0.1 0.2" />
+      <camera name="front_left" mode="fixed" pos="0.162502 -0.112159 0.80969" quat="-0.426732374728 -0.2731503756 0.496933436035 0.704517929381" fovy="34.2323408322" />
+      <site name="camera_mount_front_left" pos="0.162502 -0.112159 0.80969" type="sphere" size="0.003" rgba="0.1 0.9 0.5 1" group="5" />
+      <camera name="front_right" mode="fixed" pos="0.125593 -0.156471 0.816753" quat="-0.223852257016 -0.139393986535 0.549657424272 0.792676604606" fovy="34.2323408322" />
+      <site name="camera_mount_front_right" pos="0.125593 -0.156471 0.816753" type="sphere" size="0.003" rgba="0.1 0.9 0.5 1" group="5" />
+      <camera name="bottom" mode="fixed" pos="0.146371103706 -0.146371103706 0.019" quat="-0.348755827408 -0.399529887383 0.638685159616 0.557518169052" fovy="90" />
+      <site name="camera_mount_bottom" pos="0.146371103706 -0.146371103706 0.019" type="sphere" size="0.003" rgba="0.1 0.9 0.5 1" group="5" />
     </body>
   </worldbody>
   <actuator>

@@ -23,7 +23,8 @@ To make a one-click copy, run `package.cmd` after setup and close any running
 `SourcceyMuJoCo.exe` before replacing it. The generated executable bundles
 the MuJoCo runtime, robot model, and meshes.
 
-This opens the native MuJoCo viewer and a separate control panel. Drag in the
+This opens the native MuJoCo viewer, a control panel, and the five-camera
+preview. Drag in the
 viewer to orbit; scroll to zoom. The panel provides forward/strafe/yaw controls,
 elevator travel, all twelve arm/wrist/gripper joints, and per-arm XYZ reach targets.
 Release a base slider to stop. Escape or **STOP BASE** also stops the base.
@@ -58,8 +59,117 @@ Other commands:
 .\run.cmd --full-elevator-range
 ```
 
-`--no-panel` uses only MuJoCo's native UI. `--no-traction` disables the equivalent
+`--no-panel` uses only MuJoCo's native UI. `--no-camera-feeds` starts the
+control panel without the camera preview; its **Camera feeds** button can
+still open it later. `--no-traction` disables the equivalent
 mecanum friction forces: wheels spin but cannot drive the base.
+
+## Simulated camera feeds
+
+The model includes five cameras from the supplied camera expansion:
+`front_left`, `front_right`, `bottom`, `wrist_left`, and `wrist_right`. In the
+desktop app, the live tiled preview opens by default. Click **Camera feeds**
+in the control panel to close or reopen it. It refreshes at 5 Hz and follows
+the robot's moving base and wrists.
+You can also choose any camera in MuJoCo's native viewer Camera menu.
+
+To save all five simulated feeds without opening a window:
+
+```powershell
+.\.venv\Scripts\python.exe -m sourccey.app --camera-snapshot artifacts/camera_feeds.png --seconds 0.1
+```
+
+Git Bash, after activating `.venv`: `python -m sourccey.app --camera-snapshot artifacts/camera_feeds.png --seconds 0.1`.
+For scripts, the camera names are ordinary MuJoCo cameras; for example:
+
+```python
+import mujoco
+from sourccey.simulation import Simulation
+
+sim = Simulation()
+with mujoco.Renderer(sim.model, height=240, width=320) as renderer:
+    renderer.update_scene(sim.data, camera="wrist_left")
+    rgb = renderer.render()  # 240 x 320 x 3 uint8 array
+```
+
+The 320x240 poses, FOVs, and provenance notes are retained in
+[camera_poses.json](models/source/camera_poses.json). The source describes the
+head and wrist fits as provisional and the bottom orientation as a manual
+estimate; these are simulated pinhole views, not independently validated
+physical camera feeds. At the default raised-arm pose, parts of the hands can
+appear in the dome feeds.
+
+## Table reach example
+
+Run a scripted drive, assisted pickup, and side toss with either arm:
+
+```powershell
+.\.venv\Scripts\python.exe -m examples.table_reach --side left --view
+.\.venv\Scripts\python.exe -m examples.table_reach --side right --render artifacts/table_reach_right.png
+```
+
+In Git Bash, activate the virtual environment and use forward slashes (or just
+`python` after activation):
+
+```bash
+source .venv/Scripts/activate
+python -m examples.table_reach --side left --view
+```
+
+Without `--view`, it runs headlessly and prints measured base travel, grasp
+approach error, block lift and travel, IK error, largest joint-target step,
+peak measured joint speed, and any MuJoCo warnings. It exits with a failure
+code if the checks fail. The scene adds a table and free block at runtime; it
+does not change the robot model. Once the wrist reaches the block, the demo
+closes the gripper and temporarily welds the block to the palm, then releases
+the weld during the side sweep. The block falls under physics after release.
+**This is an assisted grasp**, not proof that the modeled fingers can pinch and
+hold objects through contact. The viewer stays open at the end for inspection.
+
+## Five-camera sorting shift
+
+Double-click `sorting-shift.cmd`, or run this from Git Bash after activating
+`.venv`:
+
+```bash
+python -m examples.sorting_shift
+```
+
+This separate scenario sets up two worktables. Sourccey sorts a red and a blue
+parcel into marked landing zones, retracts both arms, then drives forward to
+knock two foam pucks out of its lane. The window shows all five simulated
+camera feeds plus a small overview in the sixth tile and a caption for the
+current step. It stays open at the end. The default playback target is **1.3x**
+(about one third of the original fast version); the script reports the actual
+multiple. Use `--speed 5` to replay it at the original target speed.
+
+Use `python -m examples.sorting_shift --headless --snapshot artifacts/sorting_shift.png`
+for a measured run and final image. Parcel pickup uses the same explicitly
+assisted weld as the single-table example; the pucks move through simulated
+robot contact. This is a playful control demo, not a validated grasping task.
+
+## Two-hand contact grasp
+
+Double-click `dual-grasp.cmd`, or run `python -m examples.dual_grasp` from Git
+Bash after activating `.venv`. Two small colored blocks start in the open hands.
+Both grippers close around them, lift them about 18 cm, hold, then open and tip
+to release them onto the floor. This is a focused grasp check, not an autonomous
+table pickup.
+
+The blocks are free bodies. This scene adds solid fingertip contact pads and
+uses friction and gravity to hold the blocks; it does not weld, attach, or move
+them by script. The pads are simplified contact approximations because the
+original overlapping CAD gripper collision hulls are too coarse for this test.
+The five calibrated camera feeds are displayed unchanged. Two additional
+**grasp inspection** views show the blocks and fingers more clearly than the
+physical wrist camera mounts can from this pose. The run prints contact, lift,
+release, and stability measurements and fails if either grasp fails.
+
+For a quick automated check and images of the hold and final release:
+
+```bash
+python -m examples.dual_grasp --headless --snapshot artifacts/dual_grasp.png
+```
 
 ## Model and provenance
 

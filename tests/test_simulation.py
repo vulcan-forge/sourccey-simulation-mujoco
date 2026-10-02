@@ -1,9 +1,11 @@
 import xml.etree.ElementTree as ET
+import json
 
 import mujoco
 import numpy as np
 import pytest
-from sourccey.build import SOURCE, MODEL, CAD_ROTATION, ROLES, WHEELS, ELBOW_LOWER_DEGREES, ELEVATOR_UPPER_METERS
+from sourccey.build import SOURCE, MODEL, CAMERA_POSES, CAD_ROTATION, ROLES, WHEELS, ELBOW_LOWER_DEGREES, ELEVATOR_UPPER_METERS
+from sourccey.cameras import CAMERAS
 from sourccey.control import wheel_rates
 from sourccey.simulation import Simulation
 from sourccey.pose import DEFAULT_POSE
@@ -33,6 +35,28 @@ def test_source_inventory_and_full_geometry(sim):
         while body not in (0, elevator):
             body = sim.model.body_parentid[body]
         assert body == elevator
+
+
+def test_calibrated_cameras_are_mounted_on_moving_bodies(sim):
+    calibration = json.loads(CAMERA_POSES.read_text(encoding="utf-8"))
+    assert sim.model.ncam == len(CAMERAS) == 5
+    for name in CAMERAS:
+        camera = sim.model.camera(name)
+        pose = calibration[name]
+        parent = "base_link" if pose["body"] == "robot_root" else pose["body"]
+        assert sim.model.body(sim.model.cam_bodyid[camera.id]).name == parent
+        np.testing.assert_allclose(sim.model.cam_pos[camera.id], pose["pos"], atol=1e-10)
+        np.testing.assert_allclose(sim.model.cam_quat[camera.id], pose["quat_wxyz"], atol=1e-10)
+        assert sim.model.cam_fovy[camera.id] == pytest.approx(pose["fovy_deg"])
+
+    data = mujoco.MjData(sim.model)
+    mujoco.mj_resetDataKeyframe(sim.model, data, sim.model.key("startup").id)
+    mujoco.mj_forward(sim.model, data)
+    before = data.cam_xpos[sim.model.camera("wrist_left").id].copy()
+    joint = sim.model.joint("left_shoulder_pan")
+    data.qpos[joint.qposadr[0]] += 0.2
+    mujoco.mj_forward(sim.model, data)
+    assert np.linalg.norm(data.cam_xpos[sim.model.camera("wrist_left").id] - before) > 0.01
 
 
 def test_generated_fk_matches_native_urdf_import(sim):

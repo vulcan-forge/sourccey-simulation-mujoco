@@ -6,6 +6,7 @@ import numpy as np
 import mujoco
 
 from .build import ROLES
+from .cameras import CameraFeeds, save_snapshot
 from .simulation import Simulation
 
 
@@ -45,6 +46,7 @@ class Panel:
         self.joint_vars = {}
         self.ik_enabled = {side: False for side in ("left", "right")}
         self.ik_vars = {}
+        self.camera_feeds = None
         for target in sim.targets.values():
             target.frozen = False
         self.status = tk.StringVar(value="Position drives | equivalent mecanum traction | no hardware connection")
@@ -55,6 +57,7 @@ class Panel:
         ttk.Button(row, text="STOP BASE", command=self.stop).pack(side="left")
         ttk.Button(row, text="Reset pose", command=self.reset).pack(side="left", padx=5)
         ttk.Button(row, text="Pause / resume", command=self.pause).pack(side="left")
+        ttk.Button(row, text="Camera feeds", command=self.toggle_cameras).pack(side="left", padx=5)
         base = ttk.LabelFrame(self.root, text="Base — release a slider to stop")
         base.pack(fill="x", padx=12)
         self.base_vars = []
@@ -157,7 +160,24 @@ class Panel:
 
     def close(self):
         self.stop(); self.closed = True
+        if self.camera_feeds is not None:
+            self.camera_feeds.close()
         self.root.destroy()
+
+    def toggle_cameras(self):
+        if self.camera_feeds is not None and self.camera_feeds.window is not None:
+            self.camera_feeds.close()
+            self.camera_feeds = None
+        else:
+            self.show_cameras()
+
+    def show_cameras(self):
+        if self.camera_feeds is None or self.camera_feeds.window is None:
+            self.camera_feeds = CameraFeeds(self.root, self.sim)
+
+    def update_cameras(self):
+        if self.camera_feeds is not None:
+            self.camera_feeds.update()
 
 
 def main():
@@ -165,19 +185,28 @@ def main():
     parser.add_argument("--headless", action="store_true")
     parser.add_argument("--seconds", type=float, default=5)
     parser.add_argument("--render", type=Path)
+    parser.add_argument("--camera-snapshot", type=Path,
+                        help="Save a tiled image from all five simulated cameras and exit")
     parser.add_argument("--full-elevator-range", action="store_true")
     parser.add_argument("--no-traction", action="store_true", help="A/B check: wheel spin on frictionless contacts")
     parser.add_argument("--no-panel", action="store_true")
+    parser.add_argument("--no-camera-feeds", action="store_true",
+                        help="Do not open the five-camera preview on desktop startup")
     args = parser.parse_args()
     sim = Simulation(args.full_elevator_range, not args.no_traction)
-    if args.headless:
+    if args.headless or args.camera_snapshot:
         for _ in range(max(0, round(args.seconds / sim.model.opt.timestep))):
             sim.step()
         print(sim.state())
+        if args.camera_snapshot:
+            save_snapshot(sim.model, sim.data, args.camera_snapshot)
+            print(f"Saved camera feeds to {args.camera_snapshot}")
     else:
         import mujoco.viewer
         panel = None if args.no_panel else Panel(sim)
         with mujoco.viewer.launch_passive(sim.model, sim.data) as viewer:
+            if panel is not None and not args.no_camera_feeds:
+                panel.show_cameras()
             viewer.cam.lookat[:] = camera().lookat
             viewer.cam.distance, viewer.cam.azimuth, viewer.cam.elevation = 1.8, 135, -15
             viewer.opt.geomgroup[3] = 0
@@ -198,6 +227,8 @@ def main():
                         if panel is None or not panel.paused:
                             sim.step()
                         accumulator -= sim.model.opt.timestep
+                    if panel:
+                        panel.update_cameras()
                 viewer.sync()
                 time.sleep(.005)
         if panel and not panel.closed:

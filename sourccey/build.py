@@ -12,6 +12,7 @@ from .pose import DEFAULT_POSE
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "models/source/SourcceyURDF/SourcceyMkV.urdf"
+CAMERA_POSES = ROOT / "models/source/camera_poses.json"
 MODEL = ROOT / "models/sourccey.xml"
 ROLES = ("shoulder_pan", "shoulder_lift", "elbow_flex", "wrist_flex", "wrist_roll", "gripper")
 WHEELS = ("front_left_wheel", "front_right_wheel", "rear_left_wheel", "rear_right_wheel")
@@ -172,6 +173,18 @@ def build():
                       size="0.008", rgba="0.1 0.9 0.3 1", group="4")
         j = next(j for j in joints if j.get("name") == side + "_shoulder_pan")
         ET.SubElement(bodies[j.find("parent").get("link")], "site", name=side + "_mount", size="0.004", group="4")
+    # The camera calibration uses the same CAD-local body frames as this URDF.
+    # Its `robot_root` is the generated base_link before the world +45 degree
+    # alignment, so the base cameras inherit that alignment automatically.
+    calibrated = json.loads(CAMERA_POSES.read_text(encoding="utf-8"))
+    for name in ("front_left", "front_right", "bottom", "wrist_left", "wrist_right"):
+        pose = calibrated[name]
+        body = bodies["base_link" if pose["body"] == "robot_root" else pose["body"]]
+        position, orientation = fmt(pose["pos"]), fmt(pose["quat_wxyz"])
+        ET.SubElement(body, "camera", name=name, mode="fixed", pos=position,
+                      quat=orientation, fovy=f"{pose['fovy_deg']:.12g}")
+        ET.SubElement(body, "site", name="camera_mount_" + name, pos=position,
+                      type="sphere", size="0.003", rgba="0.1 0.9 0.5 1", group="5")
     actuators = ET.SubElement(root, "actuator")
     for j in joints:
         name = j.get("name")
@@ -194,6 +207,7 @@ def build():
     ET.ElementTree(root).write(MODEL, encoding="utf-8", xml_declaration=True)
     model = mujoco.MjModel.from_xml_path(str(MODEL))
     assert {model.actuator(i).name for i in range(model.nu)} == set(DEFAULT_POSE)
+    assert model.ncam == 5
     assert np.isclose(DEFAULT_POSE["linear_actuator"], ELEVATOR_UPPER_METERS)
     home = model.qpos0.copy()
     controls = np.zeros(model.nu)
