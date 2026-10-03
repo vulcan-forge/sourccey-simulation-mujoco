@@ -7,6 +7,7 @@ import mujoco
 
 from .build import ROLES
 from .cameras import CameraFeeds, save_snapshot
+from .lidar import LidarWindow, save_snapshot as save_lidar_snapshot
 from .simulation import Simulation
 
 
@@ -47,6 +48,7 @@ class Panel:
         self.ik_enabled = {side: False for side in ("left", "right")}
         self.ik_vars = {}
         self.camera_feeds = None
+        self.lidar_window = None
         for target in sim.targets.values():
             target.frozen = False
         self.status = tk.StringVar(value="Position drives | equivalent mecanum traction | no hardware connection")
@@ -58,6 +60,7 @@ class Panel:
         ttk.Button(row, text="Reset pose", command=self.reset).pack(side="left", padx=5)
         ttk.Button(row, text="Pause / resume", command=self.pause).pack(side="left")
         ttk.Button(row, text="Camera feeds", command=self.toggle_cameras).pack(side="left", padx=5)
+        ttk.Button(row, text="Lidar map", command=self.toggle_lidar).pack(side="left", padx=5)
         base = ttk.LabelFrame(self.root, text="Base — release a slider to stop")
         base.pack(fill="x", padx=12)
         self.base_vars = []
@@ -162,6 +165,8 @@ class Panel:
         self.stop(); self.closed = True
         if self.camera_feeds is not None:
             self.camera_feeds.close()
+        if self.lidar_window is not None:
+            self.lidar_window.close()
         self.root.destroy()
 
     def toggle_cameras(self):
@@ -179,6 +184,17 @@ class Panel:
         if self.camera_feeds is not None:
             self.camera_feeds.update()
 
+    def toggle_lidar(self):
+        if self.lidar_window is not None and self.lidar_window.window is not None:
+            self.lidar_window.close()
+            self.lidar_window = None
+        else:
+            self.lidar_window = LidarWindow(self.root, self.sim)
+
+    def update_lidar(self):
+        if self.lidar_window is not None:
+            self.lidar_window.update()
+
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -187,6 +203,8 @@ def main():
     parser.add_argument("--render", type=Path)
     parser.add_argument("--camera-snapshot", type=Path,
                         help="Save a tiled image from all five simulated cameras and exit")
+    parser.add_argument("--lidar-snapshot", type=Path,
+                        help="Save a planar laser scan as JSON and a companion PNG map")
     parser.add_argument("--full-elevator-range", action="store_true")
     parser.add_argument("--no-traction", action="store_true", help="A/B check: wheel spin on frictionless contacts")
     parser.add_argument("--no-panel", action="store_true")
@@ -194,13 +212,17 @@ def main():
                         help="Do not open the five-camera preview on desktop startup")
     args = parser.parse_args()
     sim = Simulation(args.full_elevator_range, not args.no_traction)
-    if args.headless or args.camera_snapshot:
+    if args.headless or args.camera_snapshot or args.lidar_snapshot:
         for _ in range(max(0, round(args.seconds / sim.model.opt.timestep))):
             sim.step()
         print(sim.state())
         if args.camera_snapshot:
             save_snapshot(sim.model, sim.data, args.camera_snapshot)
             print(f"Saved camera feeds to {args.camera_snapshot}")
+        if args.lidar_snapshot:
+            data_path, image_path = save_lidar_snapshot(sim.model, sim.data,
+                                                        args.lidar_snapshot)
+            print(f"Saved lidar scan to {data_path} and {image_path}")
     else:
         import mujoco.viewer
         panel = None if args.no_panel else Panel(sim)
@@ -229,6 +251,7 @@ def main():
                         accumulator -= sim.model.opt.timestep
                     if panel:
                         panel.update_cameras()
+                        panel.update_lidar()
                 viewer.sync()
                 time.sleep(.005)
         if panel and not panel.closed:

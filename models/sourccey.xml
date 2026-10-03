@@ -504,6 +504,7 @@
               </body>
             </body>
           </body>
+          <site name="lidar_scan_origin" pos="0.127215581 -0.127215581 0.205" quat="0.923879533 0 0 -0.382683432" type="sphere" size="0.004" rgba="1 0.2 0.1 1" group="5" />
         </body>
       </body>
       <body name="Linear_Actator_Stabilizer_v1_1" pos="-0.0269237978 0.0269237978 0.093" quat="1 0 0 0">

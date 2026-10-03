@@ -185,6 +185,10 @@ def build():
                       quat=orientation, fovy=f"{pose['fovy_deg']:.12g}")
         ET.SubElement(body, "site", name="camera_mount_" + name, pos=position,
                       type="sphere", size="0.003", rgba="0.1 0.9 0.5 1", group="5")
+    lidar = json.loads((SOURCE.parent.parent / "lidar_config.json").read_text(encoding="utf-8"))
+    ET.SubElement(bodies[lidar["body"]], "site", name="lidar_scan_origin",
+                  pos=fmt(lidar["position_body_m"]), quat=fmt(lidar["quaternion_body_wxyz"]),
+                  type="sphere", size="0.004", rgba="1 0.2 0.1 1", group="5")
     actuators = ET.SubElement(root, "actuator")
     for j in joints:
         name = j.get("name")

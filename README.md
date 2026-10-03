@@ -99,6 +99,58 @@ estimate; these are simulated pinhole views, not independently validated
 physical camera feeds. At the default raised-arm pose, parts of the hands can
 appear in the dome feeds.
 
+## Forward planar lidar
+
+The lower front slit has a simulated horizontal lidar slice for the **FHL-LD19**.
+The physical scanner rotates through 360 degrees, but this model exposes only
+the forward 180 degrees through the robot's slit; that aperture is provisional.
+Click **Lidar map** in the desktop panel to open a live robot-relative XY map;
+the orange dot is the sensor and green points are obstacle returns. The same
+scanner is available to Python scripts via `sourccey.lidar.scan(model, data)`.
+It uses 226 rays at 0.8-degree spacing, a 0.02 m minimum and a 12 m maximum;
+the live map refreshes at up to the LD19's typical 10 Hz scan rate.
+`inf` means no hit. Environment collision geometry is sensed while the robot's
+own visual and collision geometry is excluded.
+
+Run a known-obstacle example and open its image:
+
+```powershell
+.\.venv\Scripts\python.exe -m examples.lidar_demo
+Invoke-Item .\artifacts\lidar_demo.png
+```
+
+The example also writes `artifacts/lidar_demo.json` with angles, ranges, hit
+names, and the world-space scanner origin. To save a scan of the ordinary robot
+scene, run `run.cmd --lidar-snapshot artifacts/lidar_scan.json --seconds 0.1`.
+Its companion PNG has the same stem. The empty default scene has no obstacles
+at scan height, so its ranges will be empty. The optical point now sits inside
+the front-panel slit: its scan plane is at panel-local height 0.205 m, and its
+robot-forward position is 0.17991 m, about 27 mm behind the panel's outer front.
+The CAD cross-section exposes 180.00 degrees at 0.01-degree probe resolution
+there; moving 1 mm
+inward gives about 178.8 degrees, and 1 mm outward about 181.2 degrees.
+The simulated output is explicitly limited to -90 through +90 degrees.
+The exact physical optical center is not specified in the
+URDF. The CAD-derived placement and scan assumptions are in
+[lidar_config.json](models/source/lidar_config.json). Range, angular resolution,
+and scan rate follow the [FHL-LD19 manufacturer's specifications](https://wiki.youyeetoo.com/en/Lidar/D300).
+This is an ideal geometric scan; reflectivity, noise, and individual rotating
+beam timing are not modeled.
+
+For a **live room traversal**, with the lidar map in the upper-right of the
+scene and a teal scan fan drawn from the lower-front mount, run:
+
+```powershell
+.\.venv\Scripts\python.exe -m examples.lidar_room
+```
+
+Sourccey drives past six obstacles, slides between them, and turns to scan the
+room. The single window closes when you close it; after the scripted run it
+holds the final view. `--headless --snapshot artifacts/lidar_room.png` runs a
+fast measured check and saves the combined view. The fan is render-only; lidar
+returns still come from collision raycasts. For clarity, fan lines stop at
+2.2 m in the 3D view even though scans retain the full 12 m range.
+
 ## Table reach example
 
 Run a scripted drive, assisted pickup, and side toss with either arm:
