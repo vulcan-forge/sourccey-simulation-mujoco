@@ -1,0 +1,18 @@
+{
+  "center_base_m": [
+    -0.0004692681612090684,
+    0.0004927948610763453,
+    0.7036312164851688
+  ],
+  "radius_m": 0.2061215252467582,
+  "fit_rms_m": 0.0020282952839340484,
+  "method": "Two-pass least-squares sphere fit to the outer surface of the five shell meshes in base_link coordinates; excludes Dome_Plate parts. Reproduce with python -m tools.fit_dome.",
+  "source_mesh_sha256": {
+    "meshes/0108_Dome_Top_v1_1_body000.stl": "d7472ded6fc8a564da645a3f30811bb5ebff1d15d09cb2763ec1bf5ccf849475",
+    "meshes/0104_Dome_Front_v1_1_body000.stl": "7c810d4adcd81714bdae9a2807f0a913353a5f4666d48e69b645469cc64b2848",
+    "meshes/0107_Dome_Back_v1_1_body000.stl": "2b0babc26671c80c7d1e1f601d414d59bca4961101dcbfd504ba13c0241c699c",
+    "meshes/0105_Dome_Left_v1_1_body000.stl": "757b42a649abb3d9b8911e1b190495b00f4b211cec55ab6f60e87944fbe2ffe4",
+    "meshes/0106_Dome_Right_v1_1_body000.stl": "f868bbbdaf492f52c0d8850ecd31a5750b8eb33829310dbdea87bba838d74744"
+  },
+  "source_urdf_sha256_lf": "53140035e1b8d23ad3ecb0e56b445e29d9031b1a3cb6e5fde9457d3272d0f3cc"
+}

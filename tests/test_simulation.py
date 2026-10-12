@@ -235,3 +235,25 @@ def test_invalid_inputs_are_atomic(sim):
     with pytest.raises(ValueError):
         sim.set_elevator(float("nan"))
     np.testing.assert_array_equal(sim.data.ctrl, before)
+
+
+def test_dome_collision_carries_a_payload():
+    """The dome meshes are visual-only; a sphere fitted to the shell lets something rest on top."""
+    info = json.loads((MODEL.parent / "build_info.json").read_text(encoding="utf-8"))["dome_collision"]
+    assert 0.15 < info["radius_m"] < 0.25 and info["fit_rms_m"] < 0.004
+    spec = mujoco.MjSpec.from_file(str(MODEL))
+    payload = spec.worldbody.add_body(name="payload", pos=[0, 0, 1.2], mass=0.8,
+                                      inertia=[0.4 * 0.8 * 0.03 ** 2] * 3, explicitinertial=True)
+    payload.add_freejoint()
+    payload.add_geom(type=mujoco.mjtGeom.mjGEOM_SPHERE, size=[0.03, 0, 0],
+                     contype=1, conaffinity=2, friction=[0.8, 0.005, 0.0001])
+    model = spec.compile()
+    data = mujoco.MjData(model)
+    mujoco.mj_resetDataKeyframe(model, data, 0)
+    data.qpos[model.joint(model.body("payload").jntadr[0]).qposadr[0] + 2] = 1.2
+    mujoco.mj_forward(model, data)
+    for _ in range(int(1.5 / model.opt.timestep)):
+        mujoco.mj_step(model, data)
+    dome = model.geom("dome_collision")
+    apex = data.geom_xpos[dome.id][2] + model.geom_size[dome.id][0]
+    assert data.xpos[model.body("payload").id][2] == pytest.approx(apex + 0.03, abs=0.004)

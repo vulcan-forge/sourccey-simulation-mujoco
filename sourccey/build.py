@@ -24,6 +24,7 @@ ELBOW_LOWER_DEGREES = -135.0
 # requested operating barrier and home pose both stop slightly below it.
 ELEVATOR_UPPER_METERS = -0.0142
 CAD_ROTATION = Rotation.from_euler("z", np.pi / 4).as_matrix()
+DOME_COLLISION = ROOT / "models/source/dome_collision.json"
 
 
 def fmt(values):
@@ -166,6 +167,12 @@ def build():
     base.set("pos", fmt([0, 0, height]))
     ET.SubElement(base, "geom", name="chassis_collision", type="box", pos="0 0 0.035", size="0.16 0.16 0.055",
                   contype="2", conaffinity="1", group="3", rgba="0.9 0.5 0.1 0.2")
+    # Fixed collision parameters for the current shell. Refit offline only when the CAD changes.
+    dome = json.loads(DOME_COLLISION.read_text(encoding="utf-8"))
+    dome_center, dome_radius = dome["center_base_m"], dome["radius_m"]
+    dome_rms = dome["fit_rms_m"]
+    ET.SubElement(base, "geom", name="dome_collision", type="sphere", size=f"{dome_radius:.6g}",
+                  pos=fmt(dome_center), contype="2", conaffinity="1", group="3", rgba="0.9 0.5 0.1 0.2")
     # Reach point is the wrist-roll origin, unaffected by roll/gripper opening.
     for side in ("left", "right"):
         j = next(j for j in joints if j.get("name") == side + "_wrist_roll")
@@ -229,7 +236,9 @@ def build():
                 "movable_joints": 17, "meshes": len(mesh_names), "mass_kg": float(model.body_mass.sum()),
                 "base_height": height, "simulation_elbow_lower_degrees": ELBOW_LOWER_DEGREES,
                 "simulation_elevator_upper_m": ELEVATOR_UPPER_METERS,
-                "wheels": wheel_info}
+                "wheels": wheel_info,
+                "dome_collision": {"center_base_m": dome_center, "radius_m": dome_radius,
+                                   "fit_rms_m": dome_rms}}
     (MODEL.parent / "build_info.json").write_text(json.dumps(metadata, indent=2) + "\n")
     print(json.dumps({k: v for k, v in metadata.items() if k != "wheels"}, indent=2))
     return MODEL

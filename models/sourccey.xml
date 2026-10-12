@@ -840,6 +840,7 @@
         <geom name="visual_LCD_Pocket_v1_1_0" type="mesh" mesh="mesh_170" pos="0 0 0" quat="0.379409522634 -0.120590477536 0.049950211302 0.915975614988" contype="0" conaffinity="0" group="2" rgba="0.64 0.68 0.72 1" />
       </body>
       <geom name="chassis_collision" type="box" pos="0 0 0.035" size="0.16 0.16 0.055" contype="2" conaffinity="1" group="3" rgba="0.9 0.5 0.1 0.2" />
+      <geom name="dome_collision" type="sphere" size="0.206122" pos="-0.000469268161209 0.000492794861076 0.703631216485" contype="2" conaffinity="1" group="3" rgba="0.9 0.5 0.1 0.2" />
       <camera name="front_left" mode="fixed" pos="0.162502 -0.112159 0.80969" quat="-0.426732374728 -0.2731503756 0.496933436035 0.704517929381" fovy="34.2323408322" />
       <site name="camera_mount_front_left" pos="0.162502 -0.112159 0.80969" type="sphere" size="0.003" rgba="0.1 0.9 0.5 1" group="5" />
       <camera name="front_right" mode="fixed" pos="0.125593 -0.156471 0.816753" quat="-0.223852257016 -0.139393986535 0.549657424272 0.792676604606" fovy="34.2323408322" />
