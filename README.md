@@ -246,6 +246,16 @@ The base sliders accept normalized forward, strafe, and yaw commands from −1 t
 +1. Their maximum translation speed is 0.6 m/s and maximum yaw speed is 90°/s.
 Release a slider or press **STOP BASE** to brake the wheels.
 
+For a first hardware-derived response instead of these ideal linear sliders, run
+`run.cmd --base-response identified` (or `python -m sourccey.app --base-response identified`).
+This uses measured command-to-speed tables, transport delay and first-order lag
+for forward, strafe and yaw motion, while retaining contact-driven wheel physics.
+Measured isolated-axis top speeds are about **0.32 m/s forward, 0.26 m/s sideways
+and 1.03 rad/s yaw**. Low commands can produce no movement. The original `ideal`
+mode remains the default so existing timed demos retain their behavior.
+See [identification data and limits](docs/BASE_IDENTIFICATION.md) before using this
+provisional model for quantitative work.
+
 The elevator uses meters. Its default control range is **−0.3104 m to −0.0142 m**;
 `--full-elevator-range` extends the lower endpoint to **−0.315 m**. The upper
 endpoint is also the physical joint stop and startup position. Startup and Reset

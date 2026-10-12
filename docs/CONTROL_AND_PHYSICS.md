@@ -24,6 +24,9 @@ print(result, sim.state())
 `set_joints({...})` accepts joint radians (meters for the elevator), clamps to the
 generated MuJoCo limits, and rejects non-finite/unknown input atomically. Wheels
 use velocity targets.
+`Simulation(base_response="identified")` replaces the ideal base-command mapping
+with measured isolated-axis tables, delay and lag. The contact physics below is
+unchanged; see [identification data and limits](BASE_IDENTIFICATION.md).
 The elevator's upper limit is −0.0142 m; the default lower control endpoint is
 −0.3104 m. The optional full travel mode uses −0.315 m as the lower endpoint.
 Both elbows start at −2.0 rad.

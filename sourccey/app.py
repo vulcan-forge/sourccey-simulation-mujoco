@@ -207,11 +207,13 @@ def main():
                         help="Save a planar laser scan as JSON and a companion PNG map")
     parser.add_argument("--full-elevator-range", action="store_true")
     parser.add_argument("--no-traction", action="store_true", help="A/B check: wheel spin on frictionless contacts")
+    parser.add_argument("--base-response", choices=("ideal", "identified"), default="ideal",
+                        help="identified: measured speed tables, delay and lag (provisional hardware model)")
     parser.add_argument("--no-panel", action="store_true")
     parser.add_argument("--no-camera-feeds", action="store_true",
                         help="Do not open the five-camera preview on desktop startup")
     args = parser.parse_args()
-    sim = Simulation(args.full_elevator_range, not args.no_traction)
+    sim = Simulation(args.full_elevator_range, not args.no_traction, base_response=args.base_response)
     if args.headless or args.camera_snapshot or args.lidar_snapshot:
         for _ in range(max(0, round(args.seconds / sim.model.opt.timestep))):
             sim.step()

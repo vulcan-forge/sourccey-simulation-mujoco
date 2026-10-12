@@ -3,11 +3,14 @@ import numpy as np
 import mujoco
 
 from .build import MODEL, CAD_ROTATION, ROLES, WHEELS, build
-from .control import HandTarget, finite_vector, gripper_degrees, wheel_rates
+from .control import HandTarget, IdentifiedBaseResponse, finite_vector, gripper_degrees, wheel_rates, wheel_rates_from_velocity
 
 
 class Simulation:
-    def __init__(self, full_elevator_range=False, traction=True, model=None):
+    def __init__(self, full_elevator_range=False, traction=True, model=None, *, base_response="ideal"):
+        if base_response not in ("ideal", "identified"):
+            raise ValueError("base_response must be 'ideal' or 'identified'")
+        self.base_response = IdentifiedBaseResponse() if base_response == "identified" else None
         if not MODEL.exists():
             build()
         self.model = model if model is not None else mujoco.MjModel.from_xml_path(str(MODEL))
@@ -32,6 +35,8 @@ class Simulation:
         mujoco.mj_resetDataKeyframe(self.model, self.data, self.model.key("startup").id)
         self.model.actuator_biasprm[:, 0] = 0
         self.base_command[:] = 0
+        if self.base_response is not None:
+            self.base_response.reset()
         mujoco.mj_forward(self.model, self.data)
         self.targets = {side: HandTarget(self.ee_local(side)) for side in ("left", "right")}
 
@@ -49,8 +54,9 @@ class Simulation:
 
     def set_base(self, forward=0, left=0, yaw=0):
         self.base_command[:] = np.clip(finite_vector([forward, left, yaw], 3), -1, 1)
-        for name, rate in zip(WHEELS, wheel_rates(self.base_command)):
-            self.data.ctrl[self.actuators[name]] = rate
+        if self.base_response is None:
+            for name, rate in zip(WHEELS, wheel_rates(self.base_command)):
+                self.data.ctrl[self.actuators[name]] = rate
 
     def set_elevator(self, position_m):
         bottom = -.315 if self.full_elevator_range else -.3104
@@ -150,6 +156,11 @@ class Simulation:
     def step(self, count=1):
         for _ in range(count):
             m, d = self.model, self.data
+            if self.base_response is not None:
+                velocity = self.base_response.step(self.base_command, m.opt.timestep)
+                for name, rate in zip(WHEELS, wheel_rates_from_velocity(velocity)):
+                    aid = self.actuators[name]
+                    d.ctrl[aid] = np.clip(rate, *m.actuator_ctrlrange[aid])
             d.qfrc_applied[:] = 0
             mujoco.mj_forward(m, d)
             # Idealized gravity/Coriolis feed-forward, inside actuator force limits.
