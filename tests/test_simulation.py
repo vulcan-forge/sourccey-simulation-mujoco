@@ -4,7 +4,7 @@ import json
 import mujoco
 import numpy as np
 import pytest
-from sourccey.build import SOURCE, MODEL, CAMERA_POSES, CAD_ROTATION, ROLES, WHEELS, ELBOW_LOWER_DEGREES, ELEVATOR_UPPER_METERS
+from sourccey.build import SOURCE, MODEL, MASS_ESTIMATE, CAMERA_POSES, CAD_ROTATION, ROLES, WHEELS, ELBOW_LOWER_DEGREES, ELEVATOR_UPPER_METERS
 from sourccey.cameras import CAMERAS
 from sourccey.control import wheel_rates
 from sourccey.simulation import Simulation
@@ -28,13 +28,32 @@ def test_source_inventory_and_full_geometry(sim):
     assert set(sim.joints) == expected
     assert sim.model.njnt == 18 and sim.model.nu == 17  # 17 source + floating base
     assert sim.model.jnt_type[0] == mujoco.mjtJoint.mjJNT_FREE
-    assert sim.model.body_mass.sum() == pytest.approx(169.041941, abs=1e-5)
+    estimate = json.loads(MASS_ESTIMATE.read_text(encoding="utf-8"))
+    assert sim.model.body_mass.sum() == pytest.approx(estimate["total_kg"], abs=1e-3)
     elevator = sim.model.jnt_bodyid[sim.joints["linear_actuator"]]
     for side in ("left", "right"):
         body = sim.model.jnt_bodyid[sim.joints[side + "_shoulder_pan"]]
         while body not in (0, elevator):
             body = sim.model.body_parentid[body]
         assert body == elevator
+
+
+def test_mass_estimate_keeps_cad_centres_of_mass_and_inertia_shape(sim):
+    """The CAD gives every part the density of steel (169 kg in total). The build swaps in per-link
+    estimates and scales each inertia tensor by the same ratio, so only the scale may change."""
+    links = {link.get("name"): link for link in ET.parse(SOURCE).getroot().findall("link")}
+    estimate = json.loads(MASS_ESTIMATE.read_text(encoding="utf-8"))["masses"]
+    assert set(estimate) == {n for n, link in links.items() if link.find("inertial") is not None}
+    assert sum(float(link.find("inertial/mass").get("value")) for link in links.values()
+               if link.find("inertial") is not None) == pytest.approx(169.041941, abs=1e-5)
+    for name, kg in estimate.items():
+        body = sim.model.body(name)
+        cad = links[name].find("inertial")
+        assert body.mass[0] == pytest.approx(kg)
+        a = {k: float(v) for k, v in cad.find("inertia").attrib.items()}
+        trace = a["ixx"] + a["iyy"] + a["izz"]
+        assert sim.model.body_inertia[body.id].sum() == pytest.approx(
+            trace * kg / float(cad.find("mass").get("value")), rel=1e-6)
 
 
 def test_calibrated_cameras_are_mounted_on_moving_bodies(sim):

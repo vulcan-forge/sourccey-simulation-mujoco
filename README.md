@@ -231,10 +231,15 @@ STL assets, preserved in their original filenames and layout.
 - [sourccey/build.py](sourccey/build.py): reproducible conversion; edit this to make lasting model changes.
 - [models/sourccey.xml](models/sourccey.xml): generated working model.
 - [models/build_info.json](models/build_info.json): inventory, mass, wheel centers, compiler version.
+- [models/source/mass_estimate.json](models/source/mass_estimate.json): per-link mass estimate the build applies
+  (the CAD export gives every part steel density, 169 kg in total); `python -m sourccey.build --cad-masses` keeps
+  the CAD values.
 
 The original URDF compiles directly with all **17 movable joints**. The working
 MJCF preserves 132 links, 171 visual meshes, source axes/inertias, and adds
-one floating-base joint plus 17 actuators. Both arms remain descendants of the
+one floating-base joint plus 17 actuators. Link masses come from the estimate
+above (15.9 kg in total); each inertia tensor is the CAD's scaled by the same
+ratio, so centres of mass and principal axes are unchanged. Both arms remain descendants of the
 elevator. STL millimeters are scaled to meters. A +45° Z rotation aligns CAD
 forward with +X. Tests compare the generated joint frames to native URDF import
 at random poses. Joint limits match the source except the two elbow lower stops,
@@ -278,8 +283,12 @@ native viewer were smoke-tested; rendered poses were visually inspected.
 
 These are software acceptance results, not measured hardware agreement:
 
-- CAD mass totals **169.042 kg** and predates mesh filtering. Verify real masses,
-  materials, and inertias before quantitative dynamics work.
+- The CAD masses total **169.042 kg** (steel density on every part). The build replaces
+  them with an **estimate of 15.9 kg**: printed PLA+ at 10 % infill with the shell calibrated
+  to the published "just under 16 kg", plus datasheet masses for servos, wheels, motors and
+  electronics (see the file's notes). It is **not weighed**; put measured values in
+  [models/source/mass_estimate.json](models/source/mass_estimate.json) before quantitative
+  dynamics work. Driving, arm holding and every check below are unchanged by the swap.
 - Wheels use **contact-based equivalent mecanum friction**, spherical contact
   proxies, and load-limited diagonal forces. Individual rollers are not modeled.
   Only flat stationary floors are supported; slopes, obstacles, roller impacts,

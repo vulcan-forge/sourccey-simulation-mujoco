@@ -13,6 +13,9 @@ from .pose import DEFAULT_POSE
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "models/source/SourcceyURDF/SourcceyMkV.urdf"
 CAMERA_POSES = ROOT / "models/source/camera_poses.json"
+# The CAD export gives every part the density of steel (169 kg in total). The build replaces those
+# masses with per-link estimates (see the file's "_doc"); --cad-masses keeps the CAD values.
+MASS_ESTIMATE = ROOT / "models/source/mass_estimate.json"
 MODEL = ROOT / "models/sourccey.xml"
 ROLES = ("shoulder_pan", "shoulder_lift", "elbow_flex", "wrist_flex", "wrist_roll", "gripper")
 WHEELS = ("front_left_wheel", "front_right_wheel", "rear_left_wheel", "rear_right_wheel")
@@ -51,8 +54,9 @@ def vertices(path):
     return np.frombuffer(raw, dtype=dtype, count=count, offset=84)["v"].reshape(-1, 3).astype(float)
 
 
-def build():
+def build(cad_masses=False):
     source = ET.parse(SOURCE).getroot()
+    masses = {} if cad_masses else json.loads(MASS_ESTIMATE.read_text())["masses"]
     links = {e.get("name"): e for e in source.findall("link")}
     children = {name: [] for name in links}
     joints = source.findall("joint")
@@ -95,7 +99,11 @@ def build():
             I = np.array([[a['ixx'], a['ixy'], a['ixz']], [a['ixy'], a['iyy'], a['iyz']],
                           [a['ixz'], a['iyz'], a['izz']]])
             I = ir @ I @ ir.T
-            ET.SubElement(body, "inertial", pos=fmt(ip), mass=inertial.find("mass").get("value"),
+            mass = float(inertial.find("mass").get("value"))
+            if name in masses:  # same density everywhere in the CAD: scaling keeps the CoM and the shape
+                I = I * (masses[name] / mass)
+                mass = masses[name]
+            ET.SubElement(body, "inertial", pos=fmt(ip), mass=f"{mass:.12g}",
                           fullinertia=fmt([I[0, 0], I[1, 1], I[2, 2], I[0, 1], I[0, 2], I[1, 2]]))
         for index, vis in enumerate(link.findall("visual")):
             mesh = vis.find("geometry/mesh")
@@ -227,6 +235,7 @@ def build():
     metadata = {"source_sha256": hashlib.sha256(SOURCE.read_bytes()).hexdigest(),
                 "mujoco_version": mujoco.__version__, "links": len(links), "source_joints": len(joints),
                 "movable_joints": 17, "meshes": len(mesh_names), "mass_kg": float(model.body_mass.sum()),
+                "masses": "cad" if cad_masses else "estimate",
                 "base_height": height, "simulation_elbow_lower_degrees": ELBOW_LOWER_DEGREES,
                 "simulation_elevator_upper_m": ELEVATOR_UPPER_METERS,
                 "wheels": wheel_info}
@@ -236,4 +245,9 @@ def build():
 
 
 if __name__ == "__main__":
-    build()
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--cad-masses", action="store_true",
+                        help="keep the CAD masses (steel density everywhere, 169 kg) instead of the estimate")
+    build(cad_masses=parser.parse_args().cad_masses)
