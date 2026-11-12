@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "host": "192.168.1.79",
+  "captured_at": "2026-11-12T17:30:11.985220+00:00",
+  "hardware_profile": "artifacts/robot_start_pose_verified.json",
+  "operator_reference": "User confirmed both arm segments currently hang down",
+  "joint_anchors": {
+    "left_shoulder_pan": {
+      "hardware_normalized": -42.22222137451172,
+      "mujoco_rad": -0.6299546458333334
+    },
+    "left_shoulder_lift": {
+      "hardware_normalized": -99.73311614990234,
+      "mujoco_rad": -1.5707963265
+    },
+    "left_elbow_flex": {
+      "hardware_normalized": -2.8334925174713135,
+      "mujoco_rad": 0.0
+    },
+    "left_wrist_flex": {
+      "hardware_normalized": 3.1685678958892822,
+      "mujoco_rad": 0.0
+    },
+    "left_wrist_roll": {
+      "hardware_normalized": 6.1790666580200195,
+      "mujoco_rad": 0.0
+    },
+    "right_shoulder_pan": {
+      "hardware_normalized": 46.1466178894043,
+      "mujoco_rad": -0.6299546458333334
+    },
+    "right_shoulder_lift": {
+      "hardware_normalized": 98.34578704833984,
+      "mujoco_rad": 1.5707963265
+    },
+    "right_elbow_flex": {
+      "hardware_normalized": 2.0779221057891846,
+      "mujoco_rad": 0.0
+    },
+    "right_wrist_flex": {
+      "hardware_normalized": -2.654109477996826,
+      "mujoco_rad": 0.0
+    },
+    "right_wrist_roll": {
+      "hardware_normalized": 0.756302535533905,
+      "mujoco_rad": 0.0
+    }
+  },
+  "elevator_hardware_normalized": 100.0,
+  "elevator_mujoco_m": -0.0142,
+  "scope": "Single parked-pose correspondence; elbow/wrist signed scales and gripper endpoints are not calibrated",
+  "hardware_commands_sent": false,
+  "hardware_replay_ready": false,
+  "stationary_hold_verified": true,
+  "guard_discrepancy_resolved": true
+}

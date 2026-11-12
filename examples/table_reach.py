@@ -18,6 +18,7 @@ from scipy.spatial.transform import Rotation
 from sourccey.app import scene_options
 from sourccey.build import MODEL
 from sourccey.simulation import Simulation
+from sourccey.pose import RAISED_DEMO_POSE, set_startup_pose
 
 
 def scene_model(side):
@@ -59,6 +60,7 @@ def scene_model(side):
         active=0,
     )
     model = spec.compile()
+    set_startup_pose(model, RAISED_DEMO_POSE)
     # The robot's existing startup keyframe predates this free body. MjSpec
     # extends its qpos with zeros, so seed the new object's proper pose.
     model.key_qpos[model.key("startup").id, -7:] = model.qpos0[-7:]

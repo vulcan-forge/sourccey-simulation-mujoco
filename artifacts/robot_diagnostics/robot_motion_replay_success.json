@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "date": "2026-11-12",
+  "host": "192.168.1.79",
+  "operator_confirmed_working": true,
+  "trace_completed": true,
+  "validation_scope": "motion-only arm path; no physical grasp validation",
+  "command": "python -m examples.robot_ball_replay --robot-ip 192.168.1.79 --normalized --speed 2 --tracking-tolerance 5 --stall-timeout 15 --motion-only --execute",
+  "replay_samples": 1036,
+  "replay_wall_s": 43.18799999999828,
+  "maximum_target_lead_units": 4.9999999998922995,
+  "maximum_command_step_units": 0.9999999999946176,
+  "installed_host_source_sha256": "cd19dd761b5efcbc0914cfa5d5ea9fb3c9590dad13110c6964c3516920079bb0",
+  "configuration_files": [
+    "artifacts/robot_joint_mapping.json",
+    "artifacts/robot_start_pose_verified.json",
+    "artifacts/robot_host_limits.json",
+    "examples/ball_approach.example.json"
+  ]
+}

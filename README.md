@@ -28,7 +28,7 @@ preview. Drag in the
 viewer to orbit; scroll to zoom. The panel provides forward/strafe/yaw controls,
 elevator travel, all twelve arm/wrist/gripper joints, and per-arm XYZ reach targets.
 Release a base slider to stop. Escape or **STOP BASE** also stops the base.
-Reset restores the raised-arm pose shown in your MuJoCo screenshot.
+Startup and Reset park both arms hanging down, with the shoulders facing forward.
 
 Joint sliders show **full-assembly URDF degrees**. The elevator slider uses meters.
 Gripper -5° is closed, +60° is open. Reach targets use meters from
@@ -96,7 +96,7 @@ The 320x240 poses, FOVs, and provenance notes are retained in
 [camera_poses.json](models/source/camera_poses.json). The source describes the
 head and wrist fits as provisional and the bottom orientation as a manual
 estimate; these are simulated pinhole views, not independently validated
-physical camera feeds. At the default raised-arm pose, parts of the hands can
+physical camera feeds. Depending on the arm pose, parts of the hands can
 appear in the dome feeds.
 
 ## Forward planar lidar
@@ -250,18 +250,21 @@ The elevator uses meters. Its default control range is **−0.3104 m to −0.014
 `--full-elevator-range` extends the lower endpoint to **−0.315 m**. The upper
 endpoint is also the physical joint stop and startup position. Startup and Reset
 use the pose in [sourccey/pose.py](sourccey/pose.py): left/right shoulder lifts
-**+2.01/−2.01 rad**, both elbows **−2.0 rad**, and wheels at rest. The MJCF
+**−π/2 and +π/2 rad**, both elbows and wrists **0 rad**, and wheels at rest.
+Both arm segments hang down; the CAD upper arms remain about 9° off vertical. The MJCF
 stores this pose as keyframe `startup` (key 0).
 
 The panel and Python API command joint angles in radians (degrees in sliders).
 See [control and physics notes](docs/CONTROL_AND_PHYSICS.md) for the API and model
-details. No physical-robot transport is included.
+details. Optional feedback-paced physical robot replay, including the working
+motion-only command and saved robot configuration, is documented in
+[MuJoCo to robot replay](docs/ROBOT_REPLAY.md).
 
 ## Validation and physical limits
 
 The checks cover inventory, URDF/MJCF frames, all arm joint limits/midpoints, both elevator
 ranges, wheel signs in both directions, forward/strafe/yaw and braking, airborne
-and disabled traction, IK, unreachable targets, screenshot startup pose, gripper
+and disabled traction, IK, unreachable targets, arms-down startup pose, gripper
 clearance and invalid input. The desktop panel and
 native viewer were smoke-tested; rendered poses were visually inspected.
 

@@ -16,7 +16,7 @@ from scipy.spatial.transform import Rotation
 
 from sourccey.build import MODEL
 from sourccey.cameras import FEED_SIZE, LABEL_HEIGHT, render_tiled
-from sourccey.pose import DEFAULT_POSE
+from sourccey.pose import RAISED_DEMO_POSE, set_startup_pose
 from sourccey.simulation import Simulation
 
 
@@ -82,6 +82,7 @@ def scene_model():
             rgba=([0.88, 0.8, 0.18, 1] if index == 1 else [0.58, 0.3, 0.8, 1]),
         )
     model = spec.compile()
+    set_startup_pose(model, RAISED_DEMO_POSE)
     key = model.key("startup").id
     for name in ("left_parcel_free", "right_parcel_free", "lane_puck_1_free", "lane_puck_2_free"):
         adr = model.joint(name).qposadr[0]
@@ -249,7 +250,7 @@ def run(sim, dashboard=None, playback=1.3):
                       "landed_on_table": bool(0.68 < final[2] < 0.8 and zone_error < 0.12)})
         names = [f"{side}_{role}" for role in ("shoulder_pan", "shoulder_lift", "elbow_flex")]
         current = np.array([sim.data.ctrl[sim.actuators[name]] for name in names])
-        home = np.array([DEFAULT_POSE[name] for name in names])
+        home = np.array([RAISED_DEMO_POSE[name] for name in names])
         for fraction in np.linspace(0, 1, 81)[1:]:
             target = current + fraction * (home - current)
             old = np.array([sim.data.ctrl[sim.actuators[name]] for name in names])

@@ -1,0 +1,3 @@
+# Install in the simulation .venv to enable the direct robot wire client.
+pyzmq==27.1.0
+protobuf==6.31.1

@@ -90,13 +90,14 @@ def test_elbow_bends_down_beyond_source_limit(sim, side):
     assert np.rad2deg(sim.model.jnt_range[jid][0]) == pytest.approx(ELBOW_LOWER_DEGREES)
     assert sim.model.actuator_ctrlrange[sim.actuators[name], 0] == pytest.approx(sim.model.jnt_range[jid, 0])
     sim.reset()
+    sim.set_joints({side + "_shoulder_lift": 0, name: 0})
+    sim.step(1000)
     before = sim.data.site_xpos[sim.model.site(side + "_ee").id, 2]
     sim.set_joints({name: np.deg2rad(ELBOW_LOWER_DEGREES)})
     sim.step(1000)
     actual = sim.data.qpos[sim.model.jnt_qposadr[jid]]
     assert np.rad2deg(actual) == pytest.approx(ELBOW_LOWER_DEGREES, abs=1)
     after = sim.data.site_xpos[sim.model.site(side + "_ee").id, 2]
-    # The raised -2.0 rad startup pose is already near the -135 degree stop.
     assert after < before - .05
     assert not sim.state()["warnings"]
 
@@ -177,8 +178,15 @@ def test_position_drives_limits_and_midpoints(sim, side):
 
 @pytest.mark.parametrize("side", ["left", "right"])
 def test_ik_follows_full_chain_and_unreachable_is_bounded(sim, side):
-    sim.reset(); sim.step(100)
-    offset = [.02, .01, -.02] if side == "left" else [.02, -.01, -.02]
+    sim.reset()
+    # Exercise local tracking at a bent pose away from the fully extended
+    # parked configuration's singularity.
+    for role, angle in (("shoulder_lift", 0), ("elbow_flex", -.8)):
+        name = side + "_" + role
+        sim.data.qpos[sim.model.jnt_qposadr[sim.joints[name]]] = angle
+        sim.set_joints({name: angle})
+    mujoco.mj_forward(sim.model, sim.data)
+    offset = [.02, .01, .02] if side == "left" else [.02, -.01, .02]
     target = sim.ee_local(side) + offset
     before = sim.data.qpos.copy()
     result = sim.solve_ik(side, target)
@@ -193,7 +201,7 @@ def test_ik_follows_full_chain_and_unreachable_is_bounded(sim, side):
         assert sim.model.jnt_range[sim.joints[name], 0] <= sim.data.ctrl[sim.actuators[name]] <= sim.model.jnt_range[sim.joints[name], 1]
 
 
-def test_screenshot_pose_is_startup_and_reset_keyframe(sim):
+def test_arms_down_startup_and_reset_keyframe(sim):
     sim.reset()
     assert sim.model.nkey == 1
     assert sim.model.key("startup").id == 0
@@ -203,6 +211,12 @@ def test_screenshot_pose_is_startup_and_reset_keyframe(sim):
             0 if name in WHEELS else value, abs=1e-8)
     left, right = sim.ee_local("left"), sim.ee_local("right")
     np.testing.assert_allclose(left, right * [1, -1, 1], atol=.015)
+    for side in ("left", "right"):
+        shoulder = sim.data.xanchor[sim.joints[side + "_shoulder_lift"]]
+        elbow = sim.data.xanchor[sim.joints[side + "_elbow_flex"]]
+        wrist = sim.data.xanchor[sim.joints[side + "_wrist_flex"]]
+        for segment in (elbow - shoulder, wrist - elbow):
+            assert segment[2] / np.linalg.norm(segment) < -.98
     sim.step(500)
     assert not sim.state()["warnings"]
     for name, value in DEFAULT_POSE.items():

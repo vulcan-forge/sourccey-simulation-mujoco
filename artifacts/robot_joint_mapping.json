@@ -1,0 +1,186 @@
+{
+  "version": 1,
+  "host": "192.168.1.79",
+  "units": "normalized",
+  "joints": {
+    "left_shoulder_pan": {
+      "verification_status": "source_reference_confirmed",
+      "method": "Unity gear/sign maps + FullControl scene overrides + CAD delta convention + new parked anchor",
+      "motor_per_joint_scale": 1.0,
+      "derived_affine": {
+        "slope": 0.01622580821084838,
+        "offset": 0.05513502042547691,
+        "hardware_range": [
+          -100,
+          100
+        ]
+      },
+      "verification_evidence": "Unity source gain +0.016226 rad/unit agrees with recorded +0.016083 and direction; new verified down anchor"
+    },
+    "left_shoulder_lift": {
+      "verification_status": "source_reference_confirmed",
+      "method": "Unity gear/sign maps + FullControl scene overrides + CAD delta convention + new parked anchor",
+      "motor_per_joint_scale": 1.5,
+      "derived_affine": {
+        "slope": 0.01916409877574433,
+        "offset": 0.34049896260951074,
+        "hardware_range": [
+          -100,
+          100
+        ]
+      },
+      "verification_evidence": "Unity 1.5 gear ratio gives +0.019164 rad/unit, consistent with recorded +0.019577 and direction; new verified down anchor"
+    },
+    "left_elbow_flex": {
+      "verification_status": "source_reference_confirmed",
+      "method": "Unity gear/sign maps + FullControl scene overrides + CAD delta convention + new parked anchor",
+      "motor_per_joint_scale": 1.0,
+      "derived_affine": {
+        "slope": 0.02409705134291951,
+        "offset": 0.06827881467328449,
+        "hardware_range": [
+          -100,
+          100
+        ]
+      },
+      "verification_evidence": "Operator confirmed working VR direction and approximate travel; imported scene signs and 1:1 ratio; new down anchor"
+    },
+    "left_wrist_flex": {
+      "verification_status": "source_reference_confirmed",
+      "method": "Unity gear/sign maps + FullControl scene overrides + CAD delta convention + new parked anchor",
+      "motor_per_joint_scale": 1.0,
+      "derived_affine": {
+        "slope": -0.01815909599767287,
+        "offset": 0.05753832859659782,
+        "hardware_range": [
+          -100,
+          100
+        ]
+      },
+      "verification_evidence": "Operator confirmed working VR direction and approximate travel; imported scene signs and 1:1 ratio; new down anchor"
+    },
+    "left_wrist_roll": {
+      "verification_status": "source_reference_confirmed",
+      "method": "Unity gear/sign maps + FullControl scene overrides + CAD delta convention + new parked anchor",
+      "motor_per_joint_scale": 2.035,
+      "derived_affine": {
+        "slope": -0.008968627676095816,
+        "offset": 0.05541774824155923,
+        "hardware_range": [
+          -100,
+          100
+        ]
+      },
+      "verification_evidence": "Operator confirmed working VR direction and approximate travel; use current bundled 2.035 correction; bounded motion avoids old conflicting full-roll request"
+    },
+    "left_gripper": {
+      "verification_status": "source_reference_confirmed",
+      "method": "Legacy left/right closure convention and MuJoCo -5..60 degree endpoints; physical endpoint check pending",
+      "derived_affine": {
+        "slope": -0.011344640137963142,
+        "offset": 1.0471975511965976,
+        "hardware_range": [
+          0,
+          100
+        ]
+      },
+      "verification_evidence": "Existing VR processor and hardware raptor capture establish left 100 closed; scene output endpoints 0 open / 100 closed"
+    },
+    "right_shoulder_pan": {
+      "verification_status": "pending",
+      "method": "Unity gear/sign maps + FullControl scene overrides + CAD delta convention + new parked anchor",
+      "motor_per_joint_scale": 1.0,
+      "derived_affine": {
+        "slope": -0.016325541310962345,
+        "offset": 0.12341387088133049,
+        "hardware_range": [
+          -100,
+          100
+        ]
+      }
+    },
+    "right_shoulder_lift": {
+      "verification_status": "pending",
+      "method": "Unity gear/sign maps + FullControl scene overrides + CAD delta convention + new parked anchor",
+      "motor_per_joint_scale": 1.5,
+      "derived_affine": {
+        "slope": 0.019169213293698893,
+        "offset": -0.31441504196631653,
+        "hardware_range": [
+          -100,
+          100
+        ]
+      }
+    },
+    "right_elbow_flex": {
+      "verification_status": "pending",
+      "method": "Unity gear/sign maps + FullControl scene overrides + CAD delta convention + new parked anchor",
+      "motor_per_joint_scale": 1.0,
+      "derived_affine": {
+        "slope": -0.023629072950077077,
+        "offset": 0.049099373022270416,
+        "hardware_range": [
+          -100,
+          100
+        ]
+      }
+    },
+    "right_wrist_flex": {
+      "verification_status": "pending",
+      "method": "Unity gear/sign maps + FullControl scene overrides + CAD delta convention + new parked anchor",
+      "motor_per_joint_scale": 1.0,
+      "derived_affine": {
+        "slope": -0.017921270912785732,
+        "offset": -0.04756501498737344,
+        "hardware_range": [
+          -100,
+          100
+        ]
+      }
+    },
+    "right_wrist_roll": {
+      "verification_status": "pending",
+      "method": "Unity gear/sign maps + FullControl scene overrides + CAD delta convention + new parked anchor",
+      "motor_per_joint_scale": 2.076,
+      "derived_affine": {
+        "slope": 0.008795197060590959,
+        "offset": -0.006651829837445291,
+        "hardware_range": [
+          -100,
+          100
+        ]
+      }
+    },
+    "right_gripper": {
+      "verification_status": "pending",
+      "method": "Legacy left/right closure convention and MuJoCo -5..60 degree endpoints; physical endpoint check pending",
+      "derived_affine": {
+        "slope": 0.011344640137963142,
+        "offset": -0.08726646259971647,
+        "hardware_range": [
+          0,
+          100
+        ]
+      }
+    }
+  },
+  "status": "left_arm_source_references_confirmed_adapter_hardware_run_pending",
+  "anchor_policy": "Use the verified down anchor; import Unity differential signs/scales only, not old Unity offsets",
+  "limitations": [
+    "First MuJoCo hardware replay still requires supervision; not yet a measured real grasp",
+    "Old Unity offsets replaced deliberately by the verified arms-down correspondence",
+    "Right arm conversion remains pending; replay holds it at the hardware start"
+  ],
+  "source_sha256": {
+    "C:\\Users\\Theor\\Documents\\WebsiteCode\\Unity\\Sourccey-VR-Controller\\Assets\\Scripts\\UnityMotorBridge\\UnityIKMotorBridge.cs": "bef496760075f223f43fdc60aa99f85f10cdf4438611863eb91cf29a234712d5",
+    "C:\\Users\\Theor\\Documents\\WebsiteCode\\Unity\\Sourccey-VR-Controller\\Assets\\Scenes\\SourcceyFullControlVR.unity": "fb12e5458691cde259ee60e374e0ff029964fb4ab8e6d4d6c3f7459fabe0cd5a",
+    "C:\\Users\\Theor\\Documents\\WebsiteCode\\Unity\\Sourccey-VR-Controller\\Assets\\Resources\\arm_calibration.json": "f87fa6b8295b928b2afdadbd3a38e3f863d73ba6005ad0abd7140c70d5aafdbf",
+    "C:\\Users\\Theor\\Documents\\WebsiteCode\\Unity\\Sourccey-VR-Controller\\Assets\\Scripts\\Controllers\\FullRobotVisualDriver.cs": "14687074c30b9edc741f95dad517ffd24ed5a302f8fab99c5aa965c6a2705d62",
+    "C:\\Users\\Theor\\Documents\\WebsiteCode\\Unity\\Sourccey-VR-Controller\\Assets\\Scripts\\UnityMotorBridge\\UnityArmTeleopProcessor.cs": "e500b77bb934f73750b4ae8a87ef0c70b2c9fdde73f781256ce9f81fcfa0bc29"
+  },
+  "motor_calibration_source_sha256": {
+    "/home/sourccey/.cache/huggingface/lerobot/calibration/robots/sourccey_follower/sourccey_left.json": "497afdbc8d717e9db06d4a4f95309a5d21849a558647d4a3133aad4265d81581",
+    "/home/sourccey/.cache/huggingface/lerobot/calibration/robots/sourccey_follower/sourccey_right.json": "31cdadce749dda36e698d1762367e7e5c24ea0b40d65a5434f20c201ecd1e5fc"
+  },
+  "operator_confirmation": "User confirmed current VR headset teleoperation makes real left elbow and wrists follow virtual direction and approximate angle; identified Unity/Sourccey-VR-Controller as the working control repo"
+}

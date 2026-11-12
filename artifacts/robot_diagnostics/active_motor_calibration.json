@@ -1,0 +1,98 @@
+{
+  "host": "192.168.1.79",
+  "captured_at": "2026-11-12T18:28:41.674592+00:00",
+  "arms": {
+    "left": {
+      "shoulder_pan": {
+        "id": 1,
+        "drive_mode": 0,
+        "homing_offset": 1834,
+        "range_min": 988,
+        "range_max": 3103
+      },
+      "shoulder_lift": {
+        "id": 2,
+        "drive_mode": 1,
+        "homing_offset": -1382,
+        "range_min": 174,
+        "range_max": 3921
+      },
+      "elbow_flex": {
+        "id": 3,
+        "drive_mode": 0,
+        "homing_offset": -1656,
+        "range_min": 517,
+        "range_max": 3658
+      },
+      "wrist_flex": {
+        "id": 4,
+        "drive_mode": 0,
+        "homing_offset": 1683,
+        "range_min": 866,
+        "range_max": 3233
+      },
+      "wrist_roll": {
+        "id": 5,
+        "drive_mode": 0,
+        "homing_offset": 78,
+        "range_min": 850,
+        "range_max": 3229
+      },
+      "gripper": {
+        "id": 6,
+        "drive_mode": 1,
+        "homing_offset": 1828,
+        "range_min": 2017,
+        "range_max": 3572
+      }
+    },
+    "right": {
+      "shoulder_pan": {
+        "id": 7,
+        "drive_mode": 0,
+        "homing_offset": 61,
+        "range_min": 980,
+        "range_max": 3108
+      },
+      "shoulder_lift": {
+        "id": 8,
+        "drive_mode": 1,
+        "homing_offset": 947,
+        "range_min": 173,
+        "range_max": 3921
+      },
+      "elbow_flex": {
+        "id": 9,
+        "drive_mode": 0,
+        "homing_offset": -2025,
+        "range_min": 476,
+        "range_max": 3556
+      },
+      "wrist_flex": {
+        "id": 10,
+        "drive_mode": 0,
+        "homing_offset": 1599,
+        "range_min": 893,
+        "range_max": 3229
+      },
+      "wrist_roll": {
+        "id": 11,
+        "drive_mode": 0,
+        "homing_offset": -1701,
+        "range_min": 854,
+        "range_max": 3234
+      },
+      "gripper": {
+        "id": 12,
+        "drive_mode": 1,
+        "homing_offset": -1308,
+        "range_min": 533,
+        "range_max": 2077
+      }
+    }
+  },
+  "source_files": {
+    "/home/sourccey/.cache/huggingface/lerobot/calibration/robots/sourccey_follower/sourccey_left.json": "497afdbc8d717e9db06d4a4f95309a5d21849a558647d4a3133aad4265d81581",
+    "/home/sourccey/.cache/huggingface/lerobot/calibration/robots/sourccey_follower/sourccey_right.json": "31cdadce749dda36e698d1762367e7e5c24ea0b40d65a5434f20c201ecd1e5fc"
+  }
+}

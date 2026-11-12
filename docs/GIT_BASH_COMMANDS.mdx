@@ -1,0 +1,218 @@
+# Sourccey: Git Bash commands
+
+Run this first in every new Git Bash terminal:
+
+```bash
+cd /c/Users/Theor/Documents/WebsiteCode/VulcanSimulation/SourcceyMuJoCo
+source .venv/Scripts/activate
+```
+
+If `.venv` does not exist yet, run `./setup.cmd`, then activate it as above.
+
+## A) Simulation only
+
+These commands open a simulation window. They do not control the real robot.
+Run one at a time.
+
+The ball demo and manual simulator use the arms-down start. Older two-hand,
+table-toss, and sorting demos keep their own raised staging poses.
+
+### Ball: reach, grab, lift, and hold
+
+```bash
+python -m examples.ball_approach --scene examples/ball_approach.example.json --view
+```
+
+Uses a 40 mm ball and simplified contact pads. Opens MuJoCo with both arms
+hanging down, raises the active arm beside the table, and performs the pickup.
+The window closes automatically afterward. Results are saved to
+`artifacts/ball_approach.json`.
+Close the window early to stop.
+
+Half-speed arm and gripper motion:
+
+```bash
+python -m examples.ball_approach --scene examples/ball_approach.example.json --view --speed 0.5
+```
+
+This doubles the duration of movement and closing ramps. Pauses and hold time
+stay the same. It slows the actual simulated commands, not just video playback.
+Use `--speed 1` for normal speed. Values above 1 are rejected.
+
+### Both hands: grab, lift, hold, and release
+
+```bash
+python -m examples.dual_grasp
+```
+
+Opens the MuJoCo camera dashboard. Uses contact-only grasping and elevator
+motion. Close the dashboard when finished.
+
+### Left arm: reach to a table and toss a block
+
+```bash
+python -m examples.table_reach --side left --view
+```
+
+### Right arm: reach to a table and toss a block
+
+```bash
+python -m examples.table_reach --side right --view
+```
+
+These table demos drive the base and use an assisted weld to hold the block.
+They demonstrate motion rather than contact-only pickup. Close MuJoCo when done.
+
+### Sorting demonstration
+
+```bash
+python -m examples.sorting_shift
+```
+
+Opens a camera dashboard. Uses assisted grasps. Close the dashboard when done.
+
+### Open the robot for manual simulation controls
+
+```bash
+python -m sourccey.app
+```
+
+Opens MuJoCo and its control panel. This is manual simulation, not an automatic grasp.
+
+### Drive around a room with a lidar display
+
+```bash
+python -m examples.lidar_room
+```
+
+Opens the scene and lidar dashboard. Close the dashboard when done.
+
+### Preview the previously captured shoulder calibration poses
+
+```bash
+python -m examples.calibrate_arm_directions --preview
+```
+
+Requires `artifacts/arm_directions.json`. Opens MuJoCo. Press Enter in the
+terminal for each next pose, or type `q` to finish. Replays shoulder references,
+not a full-arm grasp.
+
+## B) Real robot following the simulated grasp
+
+The left-arm mapping now uses the working VR controller's conversions, anchored
+at the verified arms-down start. The revised fingertip grasp avoids the old
+wrist travel violation. **Offline preflight passes for a motion-only test.**
+The physical MuJoCo replay has not been run yet.
+
+### Install the robot connection dependencies once
+
+Use the same simulation environment for MuJoCo and the robot client:
+
+```bash
+cd /c/Users/Theor/Documents/WebsiteCode/VulcanSimulation/SourcceyMuJoCo
+source .venv/Scripts/activate
+python -m pip install -r requirements-robot.txt
+```
+
+These dependencies are already installed on this PC.
+
+### Check the full run without connecting to the robot
+
+```bash
+cd /c/Users/Theor/Documents/WebsiteCode/VulcanSimulation/SourcceyMuJoCo
+source .venv/Scripts/activate
+python -m examples.robot_ball_replay --speed 0.5 --motion-only
+```
+
+This runs the entire pickup offline and saves `artifacts/robot_ball_preflight.json`.
+It reports missing conversions, mismatched starting angles, travel violations,
+host guard conflicts, simulation failure, and illustrative scene dimensions.
+No hardware connection is opened.
+
+The confirmed left-arm source mapping is in `artifacts/robot_joint_mapping.json`.
+Right-arm conversion candidates remain unverified; this run holds the right arm
+at its saved start. Omitting `--motion-only` requires measured physical scene
+dimensions for an actual ball pickup.
+
+### First real test: follow the path in clear space
+
+The host must be running with both arms connected, VR teleoperation and other
+command clients stopped, and the full arm path clear of tables, people, and
+objects. This moves the robot through the pickup path and opens/closes its
+gripper, without claiming to grasp a real ball.
+
+```bash
+cd /c/Users/Theor/Documents/WebsiteCode/VulcanSimulation/SourcceyMuJoCo
+source .venv/Scripts/activate
+python -m examples.robot_ball_replay --robot-ip 192.168.1.79 --normalized --speed 0.5 --motion-only --execute
+```
+
+This opens MuJoCo, returns to the saved arms-down start, slowly opens the left
+gripper, and replays the revised motion. The recorded pickup is 20.16 seconds
+at normal speed and 40.32 seconds at half speed, plus 4.5 seconds of parked
+gripper preparation, return to start if needed, and any feedback pauses. The
+offline calculation runs faster than the recorded motion; its wall time is
+reported separately. Live playback automatically slows along the same path
+whenever the measured arm needs more time. The first
+run needs the operator beside the robot. Closing MuJoCo holds the last target;
+it does not disable torque.
+
+For double-speed replay with a 5-unit tracking window:
+
+```bash
+python -m examples.robot_ball_replay --robot-ip 192.168.1.79 --normalized --speed 2 --tracking-tolerance 5 --motion-only --execute
+```
+
+This plans 10.08 seconds of pickup plus 1.125 seconds of gripper preparation,
+as a nominal minimum, with return-to-start and feedback pacing separate. The 5-unit window applies
+to hold, return, and replay. Errors over 10 units still abort. Motion-only mode
+allows a full-range ramped return after a partial replay. Targets advance by
+at most 1 unit per command and stay within 5 units of measured positions.
+The default `--stall-timeout 15` permits slow movement and aborts if path
+progress stops for 15 seconds. The console prints progress during replay.
+
+### Run MuJoCo and the robot together, once preflight passes
+
+Use a physical scene file whose measurements match the actual table and ball,
+plus a completed joint mapping. The host must be running with both arms
+connected, other command clients stopped, and the return-to-start path clear.
+
+```bash
+cd /c/Users/Theor/Documents/WebsiteCode/VulcanSimulation/SourcceyMuJoCo
+source .venv/Scripts/activate
+python -m examples.robot_ball_replay --scene artifacts/ball_approach.physical.json --mapping artifacts/robot_joint_mapping.json --robot-ip 192.168.1.79 --normalized --speed 0.5 --execute
+```
+
+This opens MuJoCo, slowly brings the real arms to the verified start, slowly
+opens the active gripper, and follows the simulated pickup. Half speed is the
+default; feedback pauses may extend it. The window shows mapped real arm
+feedback. The ball is a scene marker, not a measured real object.
+
+If preflight fails, **no commands are sent**. A tracking stall aborts. Closing
+MuJoCo holds the last command; it does not release torque or act as an emergency
+stop. Feedback and targets are saved in `artifacts/robot_ball_replay.jsonl`.
+
+### Check the current pose without changing targets
+
+```bash
+cd /c/Users/Theor/Documents/WebsiteCode/VulcanSimulation/SourcceyMuJoCo
+source .venv/Scripts/activate
+python -m examples.robot_start_pose hold-current --robot-ip 192.168.1.79 --normalized --speed 0.25 --execute
+```
+
+This can enable torque. It commands the stable current readings, with no grasp
+or lowering motion.
+
+### Bring the real arms to the verified start separately
+
+```bash
+cd /c/Users/Theor/Documents/WebsiteCode/VulcanSimulation/SourcceyMuJoCo
+source .venv/Scripts/activate
+python -m examples.robot_start_pose go-to-start --profile artifacts/robot_start_pose_verified.json --robot-ip 192.168.1.79 --normalized --speed 0.5 --execute
+```
+
+The combined replay command already includes this step. Remove `--execute` to
+read feedback and inspect this standalone return plan without moving.
+
+See [joint mapping and replay details](./ROBOT_REPLAY.md) and
+[the corrected host fault](./ROBOT_START_DIAGNOSIS.md).

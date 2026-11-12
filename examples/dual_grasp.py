@@ -16,6 +16,7 @@ from scipy.spatial.transform import Rotation
 
 from sourccey.build import MODEL
 from sourccey.simulation import Simulation
+from sourccey.pose import RAISED_DEMO_POSE, set_startup_pose
 from examples.sorting_shift import overview_camera
 from sourccey.cameras import CAMERAS, FEED_SIZE, LABEL_HEIGHT
 
@@ -40,6 +41,7 @@ def scene_model():
     # Find the hand frames in the scene-only starting pose. The production
     # robot model and its normal startup keyframe are left unchanged.
     source = mujoco.MjModel.from_xml_path(str(MODEL))
+    set_startup_pose(source, RAISED_DEMO_POSE)
     pose = mujoco.MjData(source)
     mujoco.mj_resetDataKeyframe(source, pose, source.key("startup").id)
     for side in SIDES:
@@ -98,6 +100,7 @@ def scene_model():
         )
 
     model = spec.compile()
+    set_startup_pose(model, RAISED_DEMO_POSE)
     key = model.key("startup").id
     for name, target in (("linear_actuator", -0.20),
                          ("left_wrist_flex", 0), ("right_wrist_flex", 0),

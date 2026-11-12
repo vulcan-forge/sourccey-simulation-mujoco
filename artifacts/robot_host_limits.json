@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "host": "192.168.1.79",
+  "inspected_on": "2026-11-12",
+  "source": "SSH-verified recovery correction installed; kiosk-restarted host connected both arms; seam guard method and calibrated limits unchanged",
+  "units": "normalized",
+  "limits": {
+    "left_shoulder_lift.pos": {
+      "min": -100.0,
+      "max": 100.0,
+      "raw_min": 174,
+      "raw_max": 3921,
+      "calibration_file": "/home/sourccey/.cache/huggingface/lerobot/calibration/robots/sourccey_follower/sourccey_left.json"
+    },
+    "right_shoulder_lift.pos": {
+      "min": -100.0,
+      "max": 100.0,
+      "raw_min": 173,
+      "raw_max": 3921,
+      "calibration_file": "/home/sourccey/.cache/huggingface/lerobot/calibration/robots/sourccey_follower/sourccey_right.json"
+    }
+  },
+  "host_pid": 2362,
+  "host_code_sha256": "cd19dd761b5efcbc0914cfa5d5ea9fb3c9590dad13110c6964c3516920079bb0"
+}

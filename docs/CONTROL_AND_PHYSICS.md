@@ -26,7 +26,9 @@ generated MuJoCo limits, and rejects non-finite/unknown input atomically. Wheels
 use velocity targets.
 The elevator's upper limit is −0.0142 m; the default lower control endpoint is
 −0.3104 m. The optional full travel mode uses −0.315 m as the lower endpoint.
-Both elbows start at −2.0 rad.
+Both arms start hanging down: left/right shoulder lift −π/2 and +π/2 rad,
+elbows and wrists at 0 rad. Both shoulder pans face forward at about −0.630 rad.
+The parked pose is separate from hardware neutral calibration.
 IK uses scratch data and never teleports live physics. The reach site is the
 wrist-roll origin, not the fingertip. Wrist flex is held at its commanded angle
 while pan/lift/elbow solve position; roll and gripper opening do not move the site.

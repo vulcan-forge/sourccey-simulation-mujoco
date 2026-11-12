@@ -1,0 +1,21 @@
+{
+  "illustrative": true,
+  "side": "left",
+  "datum_description": "EXAMPLE ONLY: base_link origin; replace with a physically repeatable datum",
+  "datum_offset_mm": [0, 0, 0],
+  "ball_diameter_mm": 40,
+  "tabletop_height_mm": 580,
+  "ball_center_mm": [500, 180, 600],
+  "table_half_size_mm": [120, 120],
+  "approach_offset_mm": [0, 0, 80],
+  "elevator_m": -0.0142,
+  "staging_lift_rad": 1.56,
+  "arm_pose_rad": {"wrist_flex": 0, "wrist_roll": 0},
+  "fixed_landmark_mm": [100, 0, -4],
+  "moving_landmark_mm": [40, 0, 2],
+  "approach_tolerance_mm": 10,
+  "contact_pads": true,
+  "pickup": true,
+  "pinch_normal_world": [1, 0, 0],
+  "joint_motion_limits_rad": {"wrist_roll": [-0.8, 0.9]}
+}

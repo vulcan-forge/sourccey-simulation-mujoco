@@ -1,0 +1,3 @@
+# Preserve the exact host revisions used by the hash-checked patch generators.
+artifacts/robot_diagnostics/*sourccey_follower*.py text eol=lf whitespace=-blank-at-eof
+tests/fixtures/host_shoulder_safety_e0f59382.py text eol=lf whitespace=-blank-at-eof
