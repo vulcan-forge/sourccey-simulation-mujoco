@@ -4,7 +4,8 @@ from pathlib import Path
 from PyInstaller.utils.hooks import collect_dynamic_libs
 
 ROOT = Path(SPECPATH)
-datas = [(str(ROOT / "models"), "models")]
+datas = [(str(ROOT / "models"), "models"),
+         (str(ROOT / "sourccey" / "identified_base.json"), "sourccey")]
 binaries = []
 hiddenimports = ["tkinter", "tkinter.ttk", "mujoco.viewer", "glfw"]
 for package in ("mujoco", "glfw"):
