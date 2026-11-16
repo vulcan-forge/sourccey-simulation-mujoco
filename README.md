@@ -10,6 +10,10 @@ Filament camera rendering, Studio experiment review, parallel generation and
 offline physics fitting, see [MuJoCo 4 setup and workflow](docs/mujoco4.md).
 Run `setup-mujoco4.cmd` to preserve an existing 3.x `.venv` for comparison.
 
+For full-path validation of different box positions and progressively wider
+rotations, see [the stage C workspace map](docs/box_workspace.md). The selected
+model for the later training phase is **X-VLA**; workspace validation does not train it.
+
 ![Sourccey in MuJoCo](docs/preview.png)
 
 ## Run

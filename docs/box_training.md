@@ -1,5 +1,11 @@
 # Box pickup: rotation curriculum and demonstrations
 
+Stage C now adds [position and progressive rotation validation](box_workspace.md).
+The selected model for future training is **X-VLA**. The ACT configuration and
+smoke test described below document the earlier pipeline pilot, not that future
+model choice. Stage C validates scenes only; larger dataset collection and
+X-VLA training have not started.
+
 This implements the first part of test B: one measured table/box placement,
 with ten seeded upright box rotations between approximately -11 and +11.7
 degrees. The stationary robot uses its left arm. The teacher computes the
@@ -9,8 +15,8 @@ four camera images and six observed joint/gripper positions.
 
 The teacher remains a scripted controller. The demonstrations and model
 compatibility check do not establish a learned pickup policy or real-world
-transfer. Wider rotations, position variation, base motion, and recovery are
-subsequent curriculum stages.
+transfer. Wider rotations and position variation now have a separate stage C
+validation workflow linked above; base motion and recovery remain future work.
 
 ## Review the generated ten instances
 

@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "seed": 20261116,
+  "depth_offsets_mm": [-30, 0, 30],
+  "lateral_offsets_mm": [-40, 0, 40],
+  "yaw_stages_deg": [6, 12, 20],
+  "appearance": "pbr",
+  "thresholds": {
+    "maximum_transit_ik_error_mm": 35,
+    "maximum_grasp_ik_error_mm": 6,
+    "maximum_grasp_pad_angle_deg": 8,
+    "maximum_joint_endpoint_error_deg": 5,
+    "maximum_box_motion_before_close_mm": 2,
+    "maximum_self_contact_force_n": 0.1
+  },
+  "notes": "Local validation grid around the working pickup: depth 80/110/140 mm from the near edge; lateral 140/180/220 mm left of robot center. Transit IK is approximate in the existing five-axis teacher; retain actual pickup, hold, collision and tighter grasp checks. These are simulation validation thresholds, not hardware tolerances."
+}

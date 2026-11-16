@@ -32,8 +32,8 @@ def load_scene(path=DEFAULT_SCENE):
 
 
 def validate(config):
-    if config['version'] != 1 or config['test'] not in ('A', 'B') or config['side'] != 'left':
-        raise ValueError('This scene implements fixed-position, left-arm tests A and B')
+    if config['version'] != 1 or config['test'] not in ('A', 'B', 'C') or config['side'] != 'left':
+        raise ValueError('This scene implements stationary, left-arm tests A, B and C')
     if not config['robot_setup']['base_fixed'] or not config['robot_setup']['elevator_fixed']:
         raise ValueError('Test A requires fixed base and elevator')
     if config['robot_setup']['yaw_relative_to_table_deg'] != 0:
@@ -42,6 +42,8 @@ def validate(config):
         raise ValueError('This baseline implements the fixed zero-degree box orientation')
     if config['test'] == 'B' and abs(config['box_pose']['yaw_deg']) > 15:
         raise ValueError('The initial B curriculum is limited to +/-15 degrees')
+    if config['test'] == 'C' and abs(config['box_pose']['yaw_deg']) > 45:
+        raise ValueError('The initial C workspace probe is limited to +/-45 degrees')
     values = [config['object']['mass_kg'], *(config['object']['dimensions_mm'][k]
               for k in ('width', 'depth_front_to_back', 'height')),
               *(config['table'][k] for k in ('length_across_mm', 'depth_mm',
@@ -443,18 +445,21 @@ def physics_signature(config):
                  ROOT/'examples/box_training.py', ROOT/'models/source/camera_poses.json',
                  ROOT/'sourccey/appearance.py'):
         digest.update(path.read_bytes())
+    if config['test'] == 'C':
+        digest.update((ROOT/'examples/box_workspace.py').read_bytes())
     return digest.hexdigest()
 
 
-def save_run(run, report, output=OUTPUT):
+def save_run(run, report, output=OUTPUT, *, export_model=True):
     output = Path(output)
     output.mkdir(parents=True, exist_ok=True)
     (output/'report.json').write_text(json.dumps(report, indent=2, allow_nan=False)+'\n', encoding='utf-8')
-    import copy
-    exported = copy.copy(run.m)
-    # Per-step ideal gravity support is controller state, not a constant bias.
-    exported.actuator_biasprm[:,0] = 0
-    mujoco.mj_saveModel(exported,str(output/'model.mjb'),None)
+    if export_model:
+        import copy
+        exported = copy.copy(run.m)
+        # Per-step ideal gravity support is controller state, not a constant bias.
+        exported.actuator_biasprm[:,0] = 0
+        mujoco.mj_saveModel(exported,str(output/'model.mjb'),None)
     np.savez_compressed(output/'recording.npz', time=np.asarray([r[0] for r in run.frames]),
         qpos=np.asarray([r[1] for r in run.frames]), phase=np.asarray([r[2] for r in run.frames]),
         config=np.asarray(json.dumps(run.config)), signature=np.asarray(physics_signature(run.config)))
