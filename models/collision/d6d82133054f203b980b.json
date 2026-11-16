@@ -1,0 +1,23 @@
+{
+  "asset": "d6d82133054f203b980b.npz",
+  "source": "meshes/0177_Motor_6_cap_v1_2_body001.stl",
+  "source_sha256": "3d538bdb14c1f5e9979c435f59cc3a1ec7d664c79448aeece74a680d3c92fb16",
+  "scale": [
+    0.001,
+    0.001,
+    0.001
+  ],
+  "parts": 141,
+  "parameters": {
+    "threshold": 0.001,
+    "real_metric": true,
+    "preprocess_mode": "off",
+    "resolution": 1000,
+    "mcts_nodes": 10,
+    "mcts_iterations": 10,
+    "mcts_max_depth": 2,
+    "seed": 7
+  },
+  "asset_sha256": "0a49059ee248957d6dee4ee77f239c49774fcf26c407a0c12dd7cef98bb07024",
+  "build_wall_s": 159.97
+}

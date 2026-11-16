@@ -1,0 +1,23 @@
+{
+  "asset": "9291f3d09a99a0de0618.npz",
+  "source": "meshes/0155_Bicep_Left_v1_2_Component1_1_body000.stl",
+  "source_sha256": "76e324b440c095a896f4cb7273863b7bcc29d4e2231f37f0c3b1120522409725",
+  "scale": [
+    0.001,
+    0.001,
+    0.001
+  ],
+  "parts": 394,
+  "parameters": {
+    "threshold": 0.001,
+    "real_metric": true,
+    "preprocess_mode": "off",
+    "resolution": 1000,
+    "mcts_nodes": 10,
+    "mcts_iterations": 10,
+    "mcts_max_depth": 2,
+    "seed": 7
+  },
+  "asset_sha256": "a41ad3a7716ec42224b1e408204f6b66bd6e74c6a658c06e5cdf0f7becdbea1b",
+  "build_wall_s": 201.78
+}

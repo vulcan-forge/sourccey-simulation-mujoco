@@ -1,0 +1,23 @@
+{
+  "asset": "cd3b6b31eab7ea3a2de1.npz",
+  "source": "meshes/0150_Shoulder_v1_2_body000.stl",
+  "source_sha256": "6d8bd1f662184d6d9c1acbafe84e7458928503348cc10bced5c36a85c441417c",
+  "scale": [
+    0.001,
+    0.001,
+    0.001
+  ],
+  "parts": 305,
+  "parameters": {
+    "threshold": 0.001,
+    "real_metric": true,
+    "preprocess_mode": "off",
+    "resolution": 1000,
+    "mcts_nodes": 10,
+    "mcts_iterations": 10,
+    "mcts_max_depth": 2,
+    "seed": 7
+  },
+  "asset_sha256": "8bf1bd321c5dc13dd3d49c265478b628951420cb35e9e92b90af7f11fc9aaf84",
+  "build_wall_s": 120.06
+}

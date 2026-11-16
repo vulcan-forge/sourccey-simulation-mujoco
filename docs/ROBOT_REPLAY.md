@@ -1,5 +1,59 @@
 # MuJoCo to robot replay
 
+## Buffered execution on the robot
+
+The default execution mode is now **buffered**. The PC computes the complete
+path offline, including the parked gripper preparation, then checks the robot
+Host's capabilities and live shoulder limits before any movement command. It
+uses the existing feedback-checked hold and slow return to the saved start.
+After closing that streaming connection, it uploads every timestamped pose in
+one acknowledged transaction. The normal pickup contains 507 coordinated
+twelve-joint poses. Uploading does not move the robot: a separate start request
+must pass a fresh local starting-pose/base/elevator check.
+
+The Host interpolates the uploaded knots locally using the same monotone cubic
+PCHIP path as the existing replay, with a 30 Hz local control loop. It maintains
+the existing one-unit maximum command step, five-unit tracking window, ten-unit
+hard tracking abort, no-progress timeout, and final one-second settling check.
+The PC sends status/lease requests around 10 Hz instead of sending joint goals.
+Camera reads and JPEG encoding are omitted during buffered execution so they
+cannot block this local motion loop; legacy observation consumers receive
+joint/base state during that time. Camera observations resume afterward.
+
+The complete path is buffered before starting, so playback has no chunk-refill
+or buffer-underrun dependency. Retried uploads/starts are idempotent and cannot
+restart completed, cancelled, or aborted motion. Each job has an owner token and
+content checksum. Invalid timestamps, non-finite values, wrong units, travel
+violations, malformed uploads, and incompatible Hosts are rejected. The reliable
+request/reply endpoint uses TCP port **5557**; the old protobuf ports and schema
+are preserved.
+
+Closing the viewer or interrupting the PC requests cancellation. A direct legacy
+control command also preempts buffered playback. If the PC disappears, the Host
+expires its five-second client lease and holds the last finite waypoint. Local
+feedback delays over 500 ms, bad sensor reads, partial writes, altered Host
+targets, base/elevator movement, tracking errors, and stalls abort locally. These
+stops retain arm torque and are not an emergency-stop mechanism. An aborted job
+requires a new explicit upload/start; it never resumes itself after reconnect.
+
+The robot Host needs the installed buffered update and one stop/start to load
+it. The client refuses buffered execution on an older Host before sending its
+initial hold. The usual command line selects the new mode automatically:
+
+```bash
+python -m examples.robot_ball_replay --robot-ip 192.168.1.79 --normalized --speed 2 --motion-only --execute
+```
+
+For an explicit comparison with the former PC-driven executor, add
+`--execution-mode streaming`. Offline preflight still opens no robot connection
+and sends no commands. Host integration is prepared against the inspected source
+revision by `integrations.prepare_buffered_host_patch`; the portable path engine
+and Host adapter are in `integrations/buffered_trajectory.py` and
+`integrations/buffered_host.py`. No motor PID, calibration, angular mapping, or
+seam protection is changed by the buffered update.
+
+## Existing mapping and streaming reference
+
 `examples.robot_ball_replay` runs the simulation offline first. Without
 `--execute` it never constructs a robot connection. The operator confirmed that
 the existing VR teleoperation correctly tracks real left elbow/wrist direction
@@ -107,10 +161,57 @@ the path clock slows or waits, so the arm can follow the general motion without
 matching simulation timing. The reported duration is nominal; actual wall time
 may be much longer. Progress is printed every two seconds.
 
+The command loop budgets feedback reads, computation, logging, and drawing
+inside its 30 Hz period. It sleeps only for the unused portion; it does not add
+another 33 ms after that work. An over-budget iteration starts its next cycle
+without a catch-up burst, and path advancement remains capped to one control
+period and one normalized command unit. The measured-pose viewer refreshes at
+up to 10 Hz while command and feedback checks run at up to 30 Hz. Window-close
+checks still run on every logged sample and during feedback recovery.
+
+The successful 2026-11-15 speed-1 trace took 100 seconds against a nominal
+22.41 seconds. Seven feedback interruptions contributed 7.562 seconds. The
+20–30% path segment took about 31 seconds while waiting for shoulder lift;
+gripper tracking also limited much of the later path. Typical loop intervals
+were 47 ms, so the old fixed sleep added avoidable slowdown as well. The older
+2026-11-12 successful 43.188-second replay requested speed 2. These are different
+requested paces and runs; the loop correction does not establish a new physical
+completion time or change motor tuning. Use `--speed 2` to request the previously
+used faster pace with the same tracking limits.
+
+Progress messages now identify the joint limiting tracking and distinguish
+that from the software's small command-step cap. Completion prints actual and
+nominal replay time plus feedback-interruption totals, also saved in the final
+trace record. This makes transport gaps distinguishable from slower joint
+following without inferring the cause from repeated percentage messages.
+
 `--stall-timeout` defaults to 15 seconds. It stops replay only when a limited
 path makes no meaningful progress for that interval; continuous slow progress
 resets the timer, and intentional stationary dwell does not count as a stall.
 The timeout also applies to initial settling and return-to-start waiting.
+
+Observation interruptions have a separate bounded recovery window. After
+500 ms without a frame, replay reports a feedback pause and leaves its path
+clock and target fixed. It waits up to five seconds total while ZeroMQ
+reconnects automatically. It never substitutes the previous observation for a
+fresh one. When a valid frame arrives, base/elevator state and joint tracking
+are checked again before motion continues from the same waypoint. There is no
+catch-up jump, and feedback gaps do not count toward the one-second stationary
+settling checks. An outage lasting five seconds still aborts; malformed or
+out-of-range observations fail immediately. The command socket also refuses to
+queue targets for a disconnected host. The trace records `feedback-wait`,
+`feedback-recovered`, and `feedback-timeout` events, and preflight reports the
+separate feedback and mechanical-stall timeouts. The same command line works.
+
+This fixes the 2026-11-15 interruption, where the former 500 ms hard deadline
+aborted during gripper preparation at path time 1.021 seconds. The previous
+recorded inter-frame gap was already 422 ms. SSH inspection found the host
+still running with the installed shoulder correction and no recorded command
+errors; a read-only 15-second check received 448 complete frames. The exact
+source of that intermittent delay was not reproduced. Recovery tolerates a
+brief host/network pause; it cannot make a sustained disconnection safe to
+ignore. No calibration changes or host restart are required for this client fix.
+
 Any joint error over 10 units still aborts. The configurable tracking tolerance must
 be positive and below 10. The separate `robot_start_pose` command retains its
 2-unit default and maximum CLI speed of 1. Pausing can stop the target immediately.

@@ -1,0 +1,23 @@
+{
+  "asset": "eaee5fdabd6e5ed3885a.npz",
+  "source": "meshes/0134_Wrist_v1_1_body000.stl",
+  "source_sha256": "df1146092ddf7becf236aab9bc50e59f51f5eccd5dea022fa3a320caa94ef97c",
+  "scale": [
+    0.001,
+    0.001,
+    0.001
+  ],
+  "parts": 379,
+  "parameters": {
+    "threshold": 0.001,
+    "real_metric": true,
+    "preprocess_mode": "off",
+    "resolution": 1000,
+    "mcts_nodes": 10,
+    "mcts_iterations": 10,
+    "mcts_max_depth": 2,
+    "seed": 7
+  },
+  "asset_sha256": "abaebbbf0a1f78550d3bbef842f68033ff46a2affe35b4866f011997dc637258",
+  "build_wall_s": 254.18
+}

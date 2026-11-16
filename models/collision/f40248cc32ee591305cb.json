@@ -1,0 +1,23 @@
+{
+  "asset": "f40248cc32ee591305cb.npz",
+  "source": "meshes/0125_Feetech_Servo_Motor_v1_3_Feetech_Servo_Horn_v1_1_body000.stl",
+  "source_sha256": "ebe50ce57fe98eeb6b02aa2a601d510121a7bc042e27409b9a608d04cf28b71f",
+  "scale": [
+    0.001,
+    0.001,
+    0.001
+  ],
+  "parts": 63,
+  "parameters": {
+    "threshold": 0.001,
+    "real_metric": true,
+    "preprocess_mode": "off",
+    "resolution": 1000,
+    "mcts_nodes": 10,
+    "mcts_iterations": 10,
+    "mcts_max_depth": 2,
+    "seed": 7
+  },
+  "asset_sha256": "ad9f1ff28e02565ac990579b2a83bd6632e47af56ea1ac0a145b0013add5bc2b",
+  "build_wall_s": 116.8
+}

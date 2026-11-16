@@ -17,11 +17,14 @@ from examples.robot_start_pose import (
     HardwareLink, KEYS, ROLES, check_feedback, execute, finite,
     plan, positions, tracking_error, validate_host_limits, validate_profile,
     validate_stall_timeout, validate_tracking_tolerance,
+    FEEDBACK_PAUSE_S, FEEDBACK_TIMEOUT_S,
+    CONTROL_PERIOD_S, finish_control_cycle,
 )
 
 REPLAY_TRACKING_TOLERANCE = 5.
 REPLAY_STALL_TIMEOUT = 15.
 REPLAY_MAX_COMMAND_STEP = 1.
+DISPLAY_PERIOD_S = .1
 
 
 def joint_fit(entry):
@@ -186,6 +189,17 @@ def curve_target(curve, elapsed):
     return positions(target)
 
 
+def buffered_payload(curve, elevator, tracking_tolerance, stall_timeout, policy):
+    from integrations.buffered_trajectory import Trajectory
+    payload = dict(version=1, units='normalized', keys=list(KEYS),
+                   times=[float(t) for t in curve.x],
+                   positions=[[curve_target(curve, t)[k] for k in KEYS] for t in curve.x],
+                   elevator=elevator, tracking_tolerance=tracking_tolerance, stall_timeout=stall_timeout)
+    limits = {key: (v['min'], v['max']) for key, v in policy['limits'].items()}
+    Trajectory(payload, limits)  # Fully validate the upload before any connection.
+    return payload
+
+
 def go_to_start(link, profile, policy, host, speed, log, *,
                 tracking_tolerance=REPLAY_TRACKING_TOLERANCE, max_delta=30,
                 stall_timeout=REPLAY_STALL_TIMEOUT):
@@ -209,8 +223,11 @@ def go_to_start(link, profile, policy, host, speed, log, *,
         sent = True
         deadline, settled = time.monotonic() + stall_timeout, None
         while True:
+            cycle_started = time.monotonic()
             observed = link.read()
             now = time.monotonic()
+            if observed.get("feedback_gap_s"):
+                settled = None
             check_feedback(observed, held, profile["elevator"])
             error = replay_tracking_error(observed, held, tracking_tolerance)
             log({"phase": "hold-current", "observed": observed,
@@ -223,7 +240,7 @@ def go_to_start(link, profile, policy, host, speed, log, *,
                     f"Current-pose hold did not settle at {error['joint']}: "
                     f"{error['error_units']:.3f} units; replay has not started")
             link.send(held)
-            time.sleep(1 / 30)
+            finish_control_cycle(cycle_started)
     except BaseException:
         if sent:
             try:
@@ -292,12 +309,18 @@ def replay(link, curve, elevator, log, show=None, *, tracking_tolerance=REPLAY_T
     sent = False
     settled = None
     deadline = None
+    feedback_pauses, feedback_pause_s = 0, 0.
     try:
         while True:
+            cycle_started = time.monotonic()
             observed = link.read()
             now = time.monotonic()
+            if observed.get("feedback_gap_s"):
+                previous, settled = now, None
+                feedback_pauses += 1
+                feedback_pause_s += observed["feedback_gap_s"]
             check_feedback(observed, last, elevator)
-            dt, previous = min(max(now - previous, 0), 1 / 30), now
+            dt, previous = min(max(now - previous, 0), CONTROL_PERIOD_S), now
             next_elapsed, target, limited = advance_curve(
                 curve, elapsed, last, observed, dt, tracking_tolerance)
             command_step = max(abs(target[key] - last[key]) for key in KEYS)
@@ -307,6 +330,8 @@ def replay(link, curve, elevator, log, show=None, *, tracking_tolerance=REPLAY_T
                     >= min(.1, tracking_tolerance / 10)):
                 progress_at, progress_target = now, target.copy()
             error = replay_tracking_error(observed, target, tracking_tolerance)
+            limit_reason = ("tracking" if error["error_units"] >= tracking_tolerance - 1e-5
+                            else "command-step") if limited else None
             if limited and now - progress_at > stall_timeout:
                 raise TimeoutError(
                     f"Replay made no progress for {stall_timeout:g} s at {error['joint']}: "
@@ -320,15 +345,19 @@ def replay(link, curve, elevator, log, show=None, *, tracking_tolerance=REPLAY_T
             log({"phase": "replay", "trajectory_s": elapsed, "wall_elapsed_s": now - started,
                  "observed": observed, "command_step_units": command_step,
                  "commanded": last, "tracking": error,
-                 "waiting_for_tracking": limited})
+                 "path_limited": limited, "limit_reason": limit_reason,
+                 "feedback_read_wait_s": now - cycle_started,
+                 "waiting_for_tracking": limit_reason == "tracking"})
             if elapsed >= curve.x[-1]:
                 deadline = deadline or now + max(8., stall_timeout)
                 settled = (settled or now) if error["within_tolerance"] else None
                 if settled is not None and now - settled >= 1:
-                    return
+                    return {"nominal_duration_s": float(curve.x[-1]),
+                            "actual_duration_s": now - started,
+                            "feedback_pauses": feedback_pauses, "feedback_pause_s": feedback_pause_s}
                 if now > deadline:
                     raise TimeoutError("Final pose did not settle")
-            time.sleep(1 / 30)
+            finish_control_cycle(cycle_started)
     finally:
         if sent:
             # Hold the last command on completion, window close, or error.
@@ -357,6 +386,8 @@ def main():
     parser.add_argument("--output", type=Path, default=Path("artifacts/robot_ball_preflight.json"))
     parser.add_argument("--trace", type=Path, default=Path("artifacts/robot_ball_replay.jsonl"))
     parser.add_argument("--execute", action="store_true")
+    parser.add_argument("--execution-mode", choices=('buffered', 'streaming'), default='buffered',
+                        help="Run the uploaded path on the robot Host (default), or use legacy PC streaming")
     parser.add_argument("--normalized", action="store_true")
     parser.add_argument("--motion-only", action="store_true",
                         help="Test the arm path in clear space without claiming a physical grasp; permits illustrative scene dimensions")
@@ -387,7 +418,11 @@ def main():
             report["motor_calibration_source_sha256"] = snapshot["source_files"]
         if report["ready"]:
             curve, dilation = prepare_curve(frames, report["joint_fits"], profile, args.speed)
+            payload = (buffered_payload(curve, profile['elevator'], args.tracking_tolerance,
+                                        args.stall_timeout, policy) if args.execution_mode == 'buffered' else None)
             report.update(duration_s=float(curve.x[-1]), additional_time_dilation=dilation,
+                          execution_mode=args.execution_mode,
+                          buffered_point_count=0 if payload is None else len(payload['times']),
                           nominal_duration_s=float(curve.x[-1]), duration_is_nominal=True,
                           speed=args.speed, normal_pickup_duration_s=float(frames[-1]["time_s"]),
                           pickup_duration_s=float(frames[-1]["time_s"] / args.speed),
@@ -396,6 +431,10 @@ def main():
                           timing_mode="adaptive path following; speed is a ceiling, feedback can extend duration",
                           maximum_command_step_units=REPLAY_MAX_COMMAND_STEP,
                           no_progress_timeout_s=args.stall_timeout,
+                          feedback_pause_notice_s=FEEDBACK_PAUSE_S,
+                          feedback_outage_timeout_s=FEEDBACK_TIMEOUT_S,
+                          command_rate_ceiling_hz=1 / CONTROL_PERIOD_S,
+                          viewer_rate_ceiling_hz=1 / DISPLAY_PERIOD_S,
                           return_to_start_duration_s="depends on current pose; separate from pickup timing")
         report["offline_computation_wall_s"] = time.perf_counter() - computation_started
         report["phase"] = "offline-preflight"
@@ -418,10 +457,16 @@ def main():
         with viewer.launch_passive(model, data) as window:
             window.cam.lookat[:] = [.4, .18, .85]
             window.cam.distance, window.cam.azimuth, window.cam.elevation = 1.35, 180, -18
+            last_draw_at = -math.inf
 
             def show(elapsed, observed):
+                nonlocal last_draw_at
                 if not window.is_running():
                     raise KeyboardInterrupt("MuJoCo window closed")
+                now = time.monotonic()
+                if now - last_draw_at < DISPLAY_PERIOD_S:
+                    return
+                last_draw_at = now
                 # Display measured joint angles. The ball remains a scene marker;
                 # no claim that its real pose is observed by this bridge.
                 for name, fit in fits.items():
@@ -435,6 +480,8 @@ def main():
 
                 def log(record):
                     nonlocal last_progress_print
+                    if not window.is_running():
+                        raise KeyboardInterrupt("MuJoCo window closed")
                     trace.write(json.dumps(record) + "\n")
                     trace.flush()
                     message = {
@@ -444,28 +491,60 @@ def main():
                     }.get(record["phase"])
                     if message:
                         print(message, flush=True)
+                    if record['phase'] == 'trajectory-uploaded':
+                        print(f"Uploaded all {record['point_count']} timed poses; robot Host will execute locally.", flush=True)
+                    if record["phase"] == "feedback-wait" and record["first_notice"]:
+                        print("Robot feedback paused; waiting for fresh state without advancing targets "
+                              f"(up to {FEEDBACK_TIMEOUT_S:g} s)...", flush=True)
+                    elif record["phase"] == "feedback-recovered":
+                        print(f"Fresh robot feedback restored after {record['feedback_wait_s']:.1f} s; "
+                              "checking the live pose before continuing...", flush=True)
                     if (record["phase"] == "replay"
                             and record["wall_elapsed_s"] - last_progress_print >= 2):
                         last_progress_print = record["wall_elapsed_s"]
                         progress = record["trajectory_s"] / float(curve.x[-1])
-                        suffix = "; slowing for the real arm" if record["waiting_for_tracking"] else ""
+                        if record["waiting_for_tracking"]:
+                            joint = record["tracking"]["joint"].removesuffix(".pos").replace("_", " ")
+                            suffix = f"; slowing for {joint}"
+                        else:
+                            suffix = "; pacing small command steps" if record["path_limited"] else ""
                         print(f"Path {progress:.0%} complete{suffix}", flush=True)
                     if "observed" in record:
                         show(0, record["observed"])
-                link = HardwareLink(args.robot_ip)
+                rpc = None
                 try:
-                    go_to_start(link, profile, policy, args.robot_ip, args.speed, log,
-                                tracking_tolerance=args.tracking_tolerance,
-                                stall_timeout=args.stall_timeout,
-                                max_delta=200 if args.motion_only else 30)
-                    log({"phase": "replay-start"})
-                    replay(link, curve, profile["elevator"], log,
-                           tracking_tolerance=args.tracking_tolerance, stall_timeout=args.stall_timeout)
-                    log({"phase": "complete"})
-                    print("Replay complete; holding final pose. Trace:", args.trace)
+                    if args.execution_mode == 'buffered':
+                        from integrations.buffered_client import BufferedClient
+                        def check_window():
+                            if not window.is_running():
+                                raise KeyboardInterrupt('MuJoCo window closed')
+                        rpc = BufferedClient(args.robot_ip, on_wait=check_window)
+                        capabilities = rpc.capabilities()  # BEFORE any physical hold/return.
+                        from integrations.buffered_trajectory import Trajectory
+                        Trajectory(payload, capabilities['host_limits'])
+                    link = HardwareLink(args.robot_ip, on_feedback_event=log)
+                    try:
+                        go_to_start(link, profile, policy, args.robot_ip, args.speed, log,
+                                    tracking_tolerance=args.tracking_tolerance,
+                                    stall_timeout=args.stall_timeout,
+                                    max_delta=200 if args.motion_only else 30)
+                        log({"phase": "replay-start"})
+                        if rpc is None:
+                            timing = replay(link, curve, profile["elevator"], log,
+                                            tracking_tolerance=args.tracking_tolerance, stall_timeout=args.stall_timeout)
+                    finally:
+                        link.close()
+                    if rpc is not None:
+                        timing = rpc.run(payload, log)
+                    log({"phase": "complete", **timing})
+                    print(f"Replay complete in {timing['actual_duration_s']:.1f} s "
+                          f"(nominal {timing['nominal_duration_s']:.1f} s); "
+                          f"feedback interruptions: {timing['feedback_pause_s']:.1f} s "
+                          f"across {timing['feedback_pauses']} gaps. Holding final pose. Trace:", args.trace)
                 finally:
-                    link.close()
-    except (ValueError, KeyError, OSError, TimeoutError, KeyboardInterrupt) as exc:
+                    if rpc is not None:
+                        rpc.close()
+    except (ValueError, KeyError, OSError, RuntimeError, TimeoutError, KeyboardInterrupt) as exc:
         print(str(exc))
         return 2
     return 0

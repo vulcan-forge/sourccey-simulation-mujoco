@@ -1,0 +1,190 @@
+# Copyright 2025 The HuggingFace Inc. team. All rights reserved.
+# Copyright 2025 Vulcan Robotics, Inc. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import logging
+import signal
+import time
+
+import zmq
+
+from lerobot_robot_sourccey.motor_trace import trace_event, trace_path
+
+from .config_sourccey import SourcceyConfig, SourcceyHostConfig
+from .modules.host import silence_camera_warnings_for_host
+from .modules.imu import IMUReporter
+from .modules.relay import poll_relay, start_relay, stop_relay
+from .sourccey import Sourccey
+
+from ..protobuf.generated import sourccey_pb2
+
+
+class SourcceyHost:
+    def __init__(self, config: SourcceyHostConfig):
+        self.zmq_context = zmq.Context()
+        self.zmq_cmd_socket = self.zmq_context.socket(zmq.PULL)
+        self.zmq_cmd_socket.setsockopt(zmq.CONFLATE, 1)
+        self.zmq_cmd_socket.bind(f"tcp://*:{config.port_zmq_cmd}")
+
+        self.zmq_observation_socket = self.zmq_context.socket(zmq.PUSH)
+        self.zmq_observation_socket.setsockopt(zmq.CONFLATE, 1)
+        self.zmq_observation_socket.bind(f"tcp://*:{config.port_zmq_observations}")
+
+        self.connection_time_s = config.connection_time_s
+        self.watchdog_timeout_ms = config.watchdog_timeout_ms
+        self.max_loop_freq_hz = config.max_loop_freq_hz
+
+    def disconnect(self):
+        self.zmq_observation_socket.close()
+        self.zmq_cmd_socket.close()
+        self.zmq_context.term()
+
+
+def main():
+    def _handle_termination_signal(signum, _frame):
+        logging.info(f"Received signal {signum}. Shutting down Sourccey Host.")
+        raise KeyboardInterrupt
+
+    signal.signal(signal.SIGTERM, _handle_termination_signal)
+    silence_camera_warnings_for_host()
+
+    trace_event("host_process_start", argv=list(__import__("sys").argv), trace_path=str(trace_path()))
+    print(f"Motor trace: {trace_path()}", flush=True)
+    logging.info("Configuring Sourccey")
+    robot_config = SourcceyConfig(id="sourccey")
+    robot = Sourccey(robot_config)
+
+    logging.info("Connecting Sourccey")
+    trace_event("robot_connect_begin")
+    try:
+        robot.connect()
+    except BaseException as exc:
+        trace_event("robot_connect_error", error=repr(exc))
+        raise
+    trace_event("robot_connect_complete", available_arms=robot.available_arms)
+    # Establish a known-safe base state before accepting the first client command.
+    robot.stop_base()
+
+    logging.info("Starting Host")
+    host_config = SourcceyHostConfig()
+    host = SourcceyHost(host_config)
+    imu_reporter = IMUReporter(host_config)
+    imu_reporter.start()
+    relay = start_relay(host_config)
+
+    print("Waiting for commands...")
+
+    # The watchdog is armed by the first valid command. Until then the base is
+    # already stopped and an idle host should remain quietly ready for a client.
+    last_cmd_time: float | None = None
+    watchdog_active = False
+
+    try:
+        # Business logic
+        start = time.perf_counter()
+        duration = 0
+
+        observation = None
+        while duration < host.connection_time_s:
+            loop_start_time = time.time()
+            poll_relay(relay)
+            try:
+                # Receive protobuf message instead of JSON
+                msg_bytes = host.zmq_cmd_socket.recv(zmq.NOBLOCK)
+
+                # Convert protobuf to action dictionary using existing method
+                robot_action = sourccey_pb2.SourcceyRobotAction()
+                robot_action.ParseFromString(msg_bytes)
+
+                data = robot.protobuf_converter.protobuf_to_action(robot_action)
+
+                trace_event(
+                    "host_command_received",
+                    left_shoulder_lift=data.get("left_shoulder_lift.pos"),
+                    right_shoulder_lift=data.get("right_shoulder_lift.pos"),
+                    untorque_left=data.get("untorque_left"),
+                    untorque_right=data.get("untorque_right"),
+                    action=data,
+                )
+
+                # Send action to robot
+                _action_sent = robot.send_action(data)
+
+                # Update the robot
+                robot.update()
+
+                last_cmd_time = time.monotonic()
+                watchdog_active = False
+            except zmq.Again:
+                if not watchdog_active:
+                    # logging.warning("No command available")
+                    pass
+            except Exception as e:
+                trace_event("host_command_error", error=repr(e))
+                logging.error("Message fetching failed: %s", e)
+
+            now = time.monotonic()
+            if (
+                last_cmd_time is not None
+                and now - last_cmd_time > host.watchdog_timeout_ms / 1000
+                and not watchdog_active
+            ):
+                logging.warning(
+                    "Command not received for more than %d milliseconds. Stopping the base.",
+                    host.watchdog_timeout_ms,
+                )
+                robot.stop_base()
+                watchdog_active = True
+
+            observation = robot.get_observation()
+
+            # Send the observation to the remote agent
+            try:
+                if observation is not None and observation != {}:
+                    # State is also the client's connection handshake. Publish at
+                    # the host loop rate even when cameras are stalled or expose
+                    # no timestamp; get_observation supplies available frames.
+                    # Convert observation to protobuf using existing method
+                    robot_state = robot.protobuf_converter.observation_to_protobuf(observation)
+
+                    # Send protobuf message instead of JSON
+                    host.zmq_observation_socket.send(robot_state.SerializeToString(), flags=zmq.NOBLOCK)
+            except zmq.Again:
+                logging.info("Dropping observation, no client connected")
+            except Exception as e:
+                logging.error(f"Failed to send observation: {e}")
+
+            # Ensure a short sleep to avoid overloading the CPU.
+            elapsed = time.time() - loop_start_time
+
+            time.sleep(max(1 / host.max_loop_freq_hz - elapsed, 0))
+            duration = time.perf_counter() - start
+        print("Cycle time reached.")
+
+    except KeyboardInterrupt:
+        print("Keyboard interrupt received. Exiting...")
+    finally:
+        trace_event("host_shutdown_begin")
+        print("Shutting down Sourccey Host.")
+        stop_relay(relay)
+        imu_reporter.stop()
+        robot.disconnect()
+        host.disconnect()
+        trace_event("host_shutdown_complete")
+
+    logging.info("Finished Sourccey cleanly")
+
+
+if __name__ == "__main__":
+    main()

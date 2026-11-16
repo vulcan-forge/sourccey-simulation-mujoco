@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "test": "A",
+  "side": "left",
+  "object_profile": "examples/objects/feetech_sts3250_box.json",
+  "table": {
+    "length_across_mm": 1828.8,
+    "depth_mm": 908.05,
+    "height_above_floor_mm": 762.0,
+    "chest_to_near_edge_mm": 104.775,
+    "thickness_mm": 40.0,
+    "sliding_friction": 0.4,
+    "source": "VulcanBenchmark/vulcan-benchmark/configs/benchmark-draft.json:reference_setup",
+    "source_sha256": "b1f9fb4fc4f724cbc291b1a337346e0194e3374e3617eabda4aa9f84e5f8e4a0",
+    "source_status": "Owner-reported dimensions and chest gap, copied 2026-11-15",
+    "assumptions": "Thickness, legs and table contact friction are initial estimates. Long edge faces the robot."
+  },
+  "robot_setup": {
+    "lateral_offset_from_table_center_mm": 0.0,
+    "yaw_relative_to_table_deg": 0.0,
+    "elevator_m": -0.0142,
+    "base_fixed": true,
+    "elevator_fixed": true,
+    "placement_status": "Centered and square to table is a simulation assumption; physical lateral placement and yaw are unregistered. Chest datum uses CAD torso outer surface at tabletop height."
+  },
+  "box_pose": {
+    "center_from_near_edge_mm": 110.0,
+    "center_left_of_robot_mm": 180.0,
+    "yaw_deg": 0.0,
+    "orientation": "Upright: 38.4 mm front-to-back, 58.8 mm left-to-right, 58.4 mm high"
+  },
+  "grasp": {
+    "fixed_finger_contact_local_mm": [102.0, 0.0, -4.5],
+    "open_angle_deg": 60.0,
+    "closed_command_deg": -5.0,
+    "sliding_friction": 0.35,
+    "torsional_friction_m": 0.001,
+    "rolling_friction_m": 0.0001,
+    "max_gripper_torque_nm": 0.6,
+    "approach_clearance_mm": 100.0,
+    "pregrasp_backoff_mm": 15.0,
+    "fixed_finger_clearance_mm": 2.0,
+    "height_above_box_center_mm": 20.0,
+    "lift_distance_mm": 100.0,
+    "assumptions": "CAD finger landmark and servo torque cap are initial simulation settings. Conservative supplied dynamic rubber/cardboard friction is used as MuJoCo sliding friction; static 0.45 is retained in the object profile."
+  },
+  "success": {
+    "minimum_bottom_clearance_mm": 50.0,
+    "hold_seconds": 2.0,
+    "minimum_finger_normal_force_n": 0.1,
+    "maximum_box_drift_during_hold_mm": 5.0,
+    "maximum_base_translation_mm": 1.0,
+    "maximum_elevator_drift_mm": 1.0
+  }
+}

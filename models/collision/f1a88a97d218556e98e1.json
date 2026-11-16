@@ -1,0 +1,23 @@
+{
+  "asset": "f1a88a97d218556e98e1.npz",
+  "source": "meshes/0173_Gripper_Base_v1_2_body003.stl",
+  "source_sha256": "47e67f70cfd942297cd8900d605d3df935444ec728f7de281f1f1821c9e3b468",
+  "scale": [
+    0.001,
+    0.001,
+    0.001
+  ],
+  "parts": 7,
+  "parameters": {
+    "threshold": 0.001,
+    "real_metric": true,
+    "preprocess_mode": "off",
+    "resolution": 1000,
+    "mcts_nodes": 10,
+    "mcts_iterations": 10,
+    "mcts_max_depth": 2,
+    "seed": 7
+  },
+  "asset_sha256": "6ab9a90030b0a8281fb2fa7aa29ed04b0b41ea138ef922acb06fc86e6563e8e3",
+  "build_wall_s": 1.65
+}

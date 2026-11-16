@@ -1,0 +1,23 @@
+{
+  "asset": "c1c191ce00bdc5294b4d.npz",
+  "source": "meshes/0129_Forearm_v1_1_body000.stl",
+  "source_sha256": "e85b643ce79604ccbcbbe7ec7bc51913bd26a5d74e56af6ed15e5c27313d8900",
+  "scale": [
+    0.001,
+    0.001,
+    0.001
+  ],
+  "parts": 425,
+  "parameters": {
+    "threshold": 0.001,
+    "real_metric": true,
+    "preprocess_mode": "off",
+    "resolution": 1000,
+    "mcts_nodes": 10,
+    "mcts_iterations": 10,
+    "mcts_max_depth": 2,
+    "seed": 7
+  },
+  "asset_sha256": "bb47d833a601fac4c7abe28bb53cd40a083e870463960413a21aac35873a56f0",
+  "build_wall_s": 160.27
+}

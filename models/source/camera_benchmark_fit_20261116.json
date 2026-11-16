@@ -1,0 +1,278 @@
+{
+  "version": 1,
+  "status": "provisional visual framing; not a physical camera calibration",
+  "datasets": [
+    {
+      "dataset": "sourccey-benchmark-black-crumpled-000",
+      "info_sha256": "a98497dbd56a3f98baefba1167ce08079b2d60f8f9ad70683fd42de894eac88b",
+      "telemetry_sha256": "ecbf253df779191327ab25f589e468ee986a177c5b1849c1b5d5e3304c0732da"
+    },
+    {
+      "dataset": "sourccey-benchmark-black-flat-fixed-000",
+      "info_sha256": "d34680d523bbb4ccb9e91dd97cbfd7bc570c74aa95c55b054c3406f7c4161fd1",
+      "telemetry_sha256": "29bc1ac497d1cf73a2642ad52a7be86f254f3f2d62426c507ee002793e4e575b"
+    },
+    {
+      "dataset": "sourccey-benchmark-black-flat-rotated-000",
+      "info_sha256": "9749b0f0c5725033fc70b6fbb2f3ab5f0fb7c4b6d8dec326d0fe5af1142cddc7",
+      "telemetry_sha256": "92b1485c0ea7cacf7b85ac79a75b2a8a85710d0a627604e0d4ab57faf530bbba"
+    },
+    {
+      "dataset": "sourccey-benchmark-white-crumpled-000",
+      "info_sha256": "cc7ac154fb0cb423e430b2d6ed8f8e1f1fcd815322a051dcd5a258fd1754795f",
+      "telemetry_sha256": "14941de9a36bf8a93359e180e3a81d37fdb852bfd15d02a1cabe005349e7abe2"
+    },
+    {
+      "dataset": "sourccey-benchmark-white-flat-fixed-000",
+      "info_sha256": "57295c421868fa0efa4e143cc16885830afd1fdcf988203ec68895b29bd0da2a",
+      "telemetry_sha256": "32000fd6018dbc7b4117b3672e55949db1bafd998076f95655f98b12bcc30996"
+    },
+    {
+      "dataset": "sourccey-benchmark-white-flat-rotated-000",
+      "info_sha256": "77f1512b3ace211fddaea188bf928af6f888c1e22622c68fa69ed0713737b2c7",
+      "telemetry_sha256": "4370df5833143ac606bda7c25e6eea63aacbd97785b384eddf3044afb7873bd6"
+    }
+  ],
+  "sampled_observation_count": 24,
+  "camera_frames_reviewed": 96,
+  "head": {
+    "parameters": [
+      283.59280558930857,
+      0.0006448240085645147,
+      7.342903098445144,
+      0.8641097028465421
+    ],
+    "focal_px": 283.59280558930857,
+    "fovy_deg": 45.8705166029624,
+    "train_pairs": 38,
+    "held_out_pairs": 52,
+    "train_median_error_px": 2.8777542788920965,
+    "held_out_median_error_px": 2.5100680902391805,
+    "previous_120d_held_out_median_error_px": 91.2482518175979,
+    "assumptions": "Centered shared pinhole, fixed +/-15 degree yaw and mean -20 degree pitch. Distant-room points approximate infinity. Absolute intrinsics, baseline, distortion and physical extrinsics are not independently calibrated.",
+    "heads": {
+      "front_left": {
+        "quat_wxyz": [
+          -0.45416321964237916,
+          -0.25439035025489964,
+          0.5140747359488858,
+          0.6817246405113585
+        ],
+        "yaw_deg": 15,
+        "pitch_deg": -20.000322412004284,
+        "roll_deg": 7.342903098445144
+      },
+      "front_right": {
+        "quat_wxyz": [
+          -0.2179722034955336,
+          -0.14427106864376602,
+          0.5551382089069397,
+          0.7896173416708137
+        ],
+        "yaw_deg": -15,
+        "pitch_deg": -19.999677587995716,
+        "roll_deg": 0.8641097028465421
+      }
+    }
+  },
+  "wrists": {
+    "wrist_left": {
+      "camera_frame_euler_delta_xyz_deg": [
+        -5.831323906310167,
+        -1.1956961319675252,
+        2.3731489546883155
+      ],
+      "quat_wxyz": [
+        0.6720906629844834,
+        -0.1562036988136483,
+        -0.7133155749834295,
+        -0.12278206584054571
+      ],
+      "initial_median_contour_error_px": 28.5,
+      "median_contour_error_px": 5.0,
+      "x": [
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80,
+        90,
+        100,
+        110,
+        150,
+        160,
+        170,
+        180,
+        190,
+        200,
+        210,
+        220,
+        230,
+        240,
+        250,
+        260,
+        270,
+        280,
+        290,
+        300,
+        310
+      ],
+      "real_y": [
+        157.5,
+        153.0,
+        149.0,
+        144.5,
+        142.0,
+        132.0,
+        138.5,
+        142.0,
+        140.5,
+        137.5,
+        134.0,
+        129.0,
+        125.5,
+        122.5,
+        120.5,
+        121.0,
+        122.5,
+        126.0,
+        130.0,
+        133.5,
+        136.0,
+        135.0,
+        133.5,
+        122.0,
+        132.0,
+        131.5,
+        130.0,
+        129.5
+      ],
+      "render_y": [
+        164,
+        158,
+        154,
+        149,
+        145,
+        141,
+        138,
+        135,
+        133,
+        132,
+        130,
+        127,
+        125,
+        122,
+        121,
+        121,
+        121,
+        122,
+        122,
+        122,
+        122,
+        126,
+        130,
+        133,
+        136,
+        139,
+        141,
+        144
+      ],
+      "position_fixed_to_nominal_cad": true,
+      "note": "Bounded image-framing approximation from dark foreground contour medians; reflections, cloth and model mismatch limit accuracy."
+    },
+    "wrist_right": {
+      "camera_frame_euler_delta_xyz_deg": [
+        -3.205111998408828,
+        8.865504666744961,
+        4.285816638612903
+      ],
+      "quat_wxyz": [
+        -0.3379454435454475,
+        0.6155109931144895,
+        -0.4650810495951963,
+        -0.5391091836071021
+      ],
+      "initial_median_contour_error_px": 22.0,
+      "median_contour_error_px": 1.5,
+      "x": [
+        90,
+        100,
+        110,
+        120,
+        130,
+        140,
+        150,
+        160,
+        170,
+        180,
+        190,
+        200,
+        210,
+        220,
+        230,
+        240,
+        250,
+        260,
+        270
+      ],
+      "real_y": [
+        139.5,
+        133.5,
+        127.5,
+        123.0,
+        126.0,
+        129.0,
+        133.0,
+        132.0,
+        133.0,
+        136.0,
+        139.0,
+        143.0,
+        145.0,
+        148.5,
+        147.5,
+        145.5,
+        146.0,
+        153.0,
+        163.0
+      ],
+      "render_y": [
+        135,
+        132,
+        129,
+        127,
+        128,
+        130,
+        131,
+        132,
+        133,
+        135,
+        138,
+        142,
+        144,
+        144,
+        146,
+        148,
+        151,
+        154,
+        157
+      ],
+      "position_fixed_to_nominal_cad": true,
+      "note": "Bounded image-framing approximation from dark foreground contour medians; reflections, cloth and model mismatch limit accuracy."
+    }
+  },
+  "nominal_specification_archive": "camera_poses.specified_20261116.json",
+  "nominal_specification_sha256": "4360cf20f5f6f0b36e4b51c7da745c11c367dbbc0afcd42a6a16fbcda9e8a67e",
+  "head_optical_center_forward_adjustment_mm": {
+    "front_left": 10,
+    "front_right": 8
+  },
+  "render_near_plane_fraction": 0.001,
+  "projection": "Centered ideal pinhole. Full lens DFOV, effective image FOV, lens distortion and crop are distinct; only effective image FOV is approximated here.",
+  "joint_pose_limitations": "Uses existing normalized hardware-to-CAD mapping to display telemetry. Historical recording calibration is not independently recovered; right-arm mapping remains pending. Base position/yaw/lateral table registration are unrecorded assumptions.",
+  "wrist_fit_limitations": "Dark silhouette is an approximate heuristic affected by reflections, cloth and finger position. Both fixed palm and moving finger CAD geometry are used; it does not prove an exact physical optical pose.",
+  "scene": "Measured benchmark table dimensions and chest-to-near-edge gap retained; shirt/room furniture/lighting are not recreated."
+}

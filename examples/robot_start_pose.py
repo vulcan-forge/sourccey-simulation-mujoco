@@ -14,6 +14,16 @@ from examples.calibrate_arm_directions import save
 
 ROLES = ("shoulder_pan", "shoulder_lift", "elbow_flex", "wrist_flex", "wrist_roll", "gripper")
 KEYS = tuple(f"{side}_{role}.pos" for side in ("left", "right") for role in ROLES)
+FEEDBACK_PAUSE_S = .5
+FEEDBACK_TIMEOUT_S = 5.
+CONTROL_PERIOD_S = 1 / 30
+
+
+def finish_control_cycle(started):
+    """Include feedback and processing in the 30 Hz budget; never catch up."""
+    remaining = CONTROL_PERIOD_S - (time.monotonic() - started)
+    if remaining > 0:
+        time.sleep(remaining)
 
 
 def finite(value):
@@ -135,7 +145,7 @@ def check_feedback(observed, reference, elevator):
 
 
 class HardwareLink:
-    def __init__(self, host, observation_port=5556, command_port=5555):
+    def __init__(self, host, observation_port=5556, command_port=5555, *, on_feedback_event=None):
         import zmq
         # The wire schema has no LeRobot/torch dependency. Keep simulation and
         # replay in one environment instead of importing the full robot plugin.
@@ -145,17 +155,56 @@ class HardwareLink:
         self.observations = self.context.socket(zmq.PULL)
         self.observations.setsockopt(zmq.CONFLATE, 1)
         self.observations.setsockopt(zmq.LINGER, 0)
+        self.observations.setsockopt(zmq.RECONNECT_IVL, 100)
+        self.observations.setsockopt(zmq.RECONNECT_IVL_MAX, 1000)
         self.observations.connect(f"tcp://{host}:{observation_port}")
         self.command_endpoint = f"tcp://{host}:{command_port}"
         self.commands = None
-        self.first_read = True
+        self.on_feedback_event = on_feedback_event
+
+    def feedback_event(self, phase, waited, **details):
+        if self.on_feedback_event is not None:
+            self.on_feedback_event({"phase": phase, "feedback_wait_s": waited,
+                                    "feedback_timeout_s": FEEDBACK_TIMEOUT_S,
+                                    "commands_started": self.commands is not None, **details})
 
     def read(self):
-        timeout = 5000 if self.first_read else 500
-        if not self.observations.poll(timeout):
-            raise TimeoutError(f"No fresh robot observation within {timeout} ms")
-        self.first_read = False
-        state = self.pb.SourcceyRobotState.FromString(self.observations.recv())
+        """Wait for a fresh frame, freezing callers' targets during a short gap.
+
+        ZeroMQ reconnects this socket in the background. Never return a cached
+        pose or issue commands here. A longer outage still fails closed. Short
+        polls keep cancellation and the feedback status callback responsive.
+        """
+        started, waiting = time.monotonic(), False
+        while True:
+            waited = time.monotonic() - started
+            remaining = FEEDBACK_TIMEOUT_S - waited
+            if remaining <= 0:
+                self.feedback_event("feedback-timeout", waited)
+                raise TimeoutError(
+                    f"No fresh robot observation for {FEEDBACK_TIMEOUT_S:g} s; "
+                    "motion was paused, no path targets advanced. Check the robot Host and network.")
+            if self.observations.poll(min(100, math.ceil(remaining * 1000))):
+                try:
+                    raw = self.observations.recv(flags=self.zmq.NOBLOCK)
+                except self.zmq.Again:
+                    continue
+                observed = self.decode_observation(raw)
+                if waiting:
+                    observed["feedback_gap_s"] = time.monotonic() - started
+                    self.feedback_event("feedback-recovered", observed["feedback_gap_s"])
+                return observed
+            waited = time.monotonic() - started
+            if waited >= FEEDBACK_PAUSE_S:
+                self.feedback_event("feedback-wait", waited, first_notice=not waiting)
+                waiting = True
+
+    def decode_observation(self, raw):
+        from google.protobuf.message import DecodeError
+        try:
+            state = self.pb.SourcceyRobotState.FromString(raw)
+        except DecodeError as exc:
+            raise ValueError("Invalid robot observation protobuf; stopping motion") from exc
         required = ("left_arm_joints", "right_arm_joints", "base_position", "base_velocity")
         if not all(state.HasField(field) for field in required):
             raise ValueError("Observation is missing arm/base/elevator state")
@@ -171,6 +220,9 @@ class HardwareLink:
             self.commands = self.context.socket(self.zmq.PUSH)
             self.commands.setsockopt(self.zmq.CONFLATE, 1)
             self.commands.setsockopt(self.zmq.LINGER, 0)
+            # Do not queue commands for delivery after a disconnected host
+            # returns. Motion needs a connected pipe and fresh observations.
+            self.commands.setsockopt(self.zmq.IMMEDIATE, 1)
             self.commands.connect(self.command_endpoint)
         action = self.pb.SourcceyRobotAction()
         for side in ("left", "right"):
@@ -231,8 +283,11 @@ def execute(link, motion, elevator, on_sample=None, *, tracking_tolerance=2., st
     waiting_since = None
     try:
         while elapsed < motion["duration_s"]:
+            cycle_started = time.monotonic()
             observed = link.read()
             now = time.monotonic()
+            if observed.get("feedback_gap_s"):
+                previous = now  # Resume at this waypoint, without catch-up.
             error = tracking_error(observed, last_target)
             error["tolerance_units"] = tracking_tolerance
             if on_sample is not None:
@@ -241,7 +296,7 @@ def execute(link, motion, elevator, on_sample=None, *, tracking_tolerance=2., st
                            "commanded": last_target.copy(), "tracking": error,
                            "waiting_for_tracking": error["error_units"] > tracking_tolerance})
             check_feedback(observed, last_target, elevator)
-            dt = min(now - previous, 1 / 30)
+            dt = min(now - previous, CONTROL_PERIOD_S)
             previous = now
             if error["error_units"] > tracking_tolerance:
                 # Hold this small waypoint until feedback catches up instead
@@ -251,7 +306,7 @@ def execute(link, motion, elevator, on_sample=None, *, tracking_tolerance=2., st
                     raise TimeoutError(f"Joint did not catch up within {stall_timeout:g} s; stopping the ramp. {error_description(error)}")
                 if sent_any:
                     link.send(last_target)
-                time.sleep(1 / 30)
+                finish_control_cycle(cycle_started)
                 continue
             waiting_since = None
             elapsed = min(motion["duration_s"], elapsed + dt)
@@ -259,10 +314,13 @@ def execute(link, motion, elevator, on_sample=None, *, tracking_tolerance=2., st
             link.send(target)
             sent_any = True
             last_target = target
-            time.sleep(1 / 30)
+            finish_control_cycle(cycle_started)
         deadline, settled_since = time.monotonic() + max(8., stall_timeout), None
         while time.monotonic() < deadline:
+            cycle_started = time.monotonic()
             observed = link.read()
+            if observed.get("feedback_gap_s"):
+                settled_since = None  # A feedback outage is not settled time.
             if on_sample is not None:
                 on_sample({"phase": "settle", "wall_elapsed_s": time.monotonic() - started,
                            "ramp_elapsed_s": elapsed, "observed": observed,
@@ -277,7 +335,7 @@ def execute(link, motion, elevator, on_sample=None, *, tracking_tolerance=2., st
             else:
                 settled_since = None
             link.send(last_target)
-            time.sleep(1 / 30)
+            finish_control_cycle(cycle_started)
         raise TimeoutError(f"Start pose did not settle within {tracking_tolerance:g} units; do not begin grasp replay. "
                            + error_description(tracking_error(observed, motion["target"])))
     except BaseException as exc:

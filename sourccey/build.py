@@ -68,6 +68,9 @@ def build():
                   cone="elliptic", iterations="60", gravity="0 0 -9.81")
     visual = ET.SubElement(root, "visual")
     ET.SubElement(visual, "global", offwidth="1280", offheight="960")
+    # Wrist foreground and optical centers need millimeter-scale visibility;
+    # the previous 14 mm near plane masked eye-platform camera overlaps.
+    ET.SubElement(visual, "map", znear="0.001")
     ET.SubElement(visual, "headlight", ambient="0.4 0.4 0.4", diffuse="0.7 0.7 0.7")
     asset = ET.SubElement(root, "asset")
     ET.SubElement(asset, "texture", name="floor", type="2d", builtin="checker", width="512", height="512",

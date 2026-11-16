@@ -1,0 +1,23 @@
+{
+  "asset": "e456422d48ffb8c00984.npz",
+  "source": "meshes/0128_Motor_3_support_v1_1_body000.stl",
+  "source_sha256": "3c60dee528a7fff750a2129d622af857f107c442d5d3f98dc15a64f4da1f9e72",
+  "scale": [
+    0.001,
+    0.001,
+    0.001
+  ],
+  "parts": 80,
+  "parameters": {
+    "threshold": 0.001,
+    "real_metric": true,
+    "preprocess_mode": "off",
+    "resolution": 1000,
+    "mcts_nodes": 10,
+    "mcts_iterations": 10,
+    "mcts_max_depth": 2,
+    "seed": 7
+  },
+  "asset_sha256": "4767b1417191e406421b15445e4a32ab9b108f824bb188460a99c4d65a0af439",
+  "build_wall_s": 38.86
+}

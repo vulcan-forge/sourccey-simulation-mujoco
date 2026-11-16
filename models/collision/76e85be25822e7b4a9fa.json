@@ -1,0 +1,23 @@
+{
+  "asset": "76e85be25822e7b4a9fa.npz",
+  "source": "meshes/0144_Gripper_Finger_v1_1_body001.stl",
+  "source_sha256": "c875cc671a190fa571c76e46629d2417fc08ff1d6573c89c07dfc288b8de94a0",
+  "scale": [
+    0.001,
+    0.001,
+    0.001
+  ],
+  "parts": 5,
+  "parameters": {
+    "threshold": 0.001,
+    "real_metric": true,
+    "preprocess_mode": "off",
+    "resolution": 1000,
+    "mcts_nodes": 10,
+    "mcts_iterations": 10,
+    "mcts_max_depth": 2,
+    "seed": 7
+  },
+  "asset_sha256": "0a6c52db1f81edb6fbdd4da6c2909031cb8ff535f5420f32781e9f1308ec66af",
+  "build_wall_s": 2.1
+}

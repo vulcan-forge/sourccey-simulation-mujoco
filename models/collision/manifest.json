@@ -1,0 +1,1351 @@
+{
+  "generator": "CoACD",
+  "version": "1.0.14",
+  "parameters": {
+    "threshold": 0.001,
+    "real_metric": true,
+    "preprocess_mode": "auto",
+    "resolution": 1000,
+    "mcts_nodes": 10,
+    "mcts_iterations": 10,
+    "mcts_max_depth": 2,
+    "seed": 7
+  },
+  "units": "meters; vertices preserve source mesh coordinates",
+  "meshes": {
+    "mesh_100": {
+      "asset": "f9cbbde98c73cebb32a4.npz",
+      "source": "meshes/0123_Bicep_Right_v1_1_Component1_1_body000.stl",
+      "source_sha256": "0908c66ad725e3348b6aabd19fdeb0ad233ba80f28770f56eb789a9992e9b0b7",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 358,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "16791ba7c9a1f004c59369e8adad2a2c9eb3417521542eedc23221b8b47c1859",
+      "build_wall_s": 129.34
+    },
+    "mesh_101": {
+      "asset": "f40248cc32ee591305cb.npz",
+      "source": "meshes/0125_Feetech_Servo_Motor_v1_3_Feetech_Servo_Horn_v1_1_body000.stl",
+      "source_sha256": "ebe50ce57fe98eeb6b02aa2a601d510121a7bc042e27409b9a608d04cf28b71f",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 63,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "ad9f1ff28e02565ac990579b2a83bd6632e47af56ea1ac0a145b0013add5bc2b",
+      "build_wall_s": 116.8
+    },
+    "mesh_102": {
+      "asset": "f40248cc32ee591305cb.npz",
+      "source": "meshes/0126_Feetech_Servo_Motor_v1_3_Feetech_Servo_Horn_v1_2_body000.stl",
+      "source_sha256": "ebe50ce57fe98eeb6b02aa2a601d510121a7bc042e27409b9a608d04cf28b71f",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 63,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "ad9f1ff28e02565ac990579b2a83bd6632e47af56ea1ac0a145b0013add5bc2b",
+      "build_wall_s": 116.8
+    },
+    "mesh_103": {
+      "asset": "d50f20d7694de0ed1555.npz",
+      "source": "meshes/0127_Feetech_Servo_Motor_v1_3_body000.stl",
+      "source_sha256": "17d13e5aabdfa0165d49a190868036abe0ca9107197a7deb63ea6777ce22019b",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 68,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "2b1ddf9f909157650b8640cf38384d3ab977ac0333caa3d80c7468e1cbadcabc",
+      "build_wall_s": 26.67
+    },
+    "mesh_104": {
+      "asset": "c1c191ce00bdc5294b4d.npz",
+      "source": "meshes/0129_Forearm_v1_1_body000.stl",
+      "source_sha256": "e85b643ce79604ccbcbbe7ec7bc51913bd26a5d74e56af6ed15e5c27313d8900",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 425,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "bb47d833a601fac4c7abe28bb53cd40a083e870463960413a21aac35873a56f0",
+      "build_wall_s": 160.27
+    },
+    "mesh_105": {
+      "asset": "f40248cc32ee591305cb.npz",
+      "source": "meshes/0130_Feetech_Servo_Motor_v1_4_Feetech_Servo_Horn_v1_1_body000.stl",
+      "source_sha256": "ebe50ce57fe98eeb6b02aa2a601d510121a7bc042e27409b9a608d04cf28b71f",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 63,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "ad9f1ff28e02565ac990579b2a83bd6632e47af56ea1ac0a145b0013add5bc2b",
+      "build_wall_s": 116.8
+    },
+    "mesh_106": {
+      "asset": "f40248cc32ee591305cb.npz",
+      "source": "meshes/0131_Feetech_Servo_Motor_v1_4_Feetech_Servo_Horn_v1_2_body000.stl",
+      "source_sha256": "ebe50ce57fe98eeb6b02aa2a601d510121a7bc042e27409b9a608d04cf28b71f",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 63,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "ad9f1ff28e02565ac990579b2a83bd6632e47af56ea1ac0a145b0013add5bc2b",
+      "build_wall_s": 116.8
+    },
+    "mesh_107": {
+      "asset": "d50f20d7694de0ed1555.npz",
+      "source": "meshes/0132_Feetech_Servo_Motor_v1_4_body000.stl",
+      "source_sha256": "17d13e5aabdfa0165d49a190868036abe0ca9107197a7deb63ea6777ce22019b",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 68,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "2b1ddf9f909157650b8640cf38384d3ab977ac0333caa3d80c7468e1cbadcabc",
+      "build_wall_s": 26.67
+    },
+    "mesh_108": {
+      "asset": "eaee5fdabd6e5ed3885a.npz",
+      "source": "meshes/0134_Wrist_v1_1_body000.stl",
+      "source_sha256": "df1146092ddf7becf236aab9bc50e59f51f5eccd5dea022fa3a320caa94ef97c",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 379,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "abaebbbf0a1f78550d3bbef842f68033ff46a2affe35b4866f011997dc637258",
+      "build_wall_s": 254.18
+    },
+    "mesh_109": {
+      "asset": "cd437148eccb74880511.npz",
+      "source": "meshes/0138_Motor_5_support_v1_1_body000.stl",
+      "source_sha256": "8e3c42c7364d488ee22c403e3bfe65f37c9c6d64fe811a900a8ebd0d7745816e",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 64,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "bfc8c218e8baaf423e44abb37560d80b7d894d93792c272be990a05f3fdae84b",
+      "build_wall_s": 34.23
+    },
+    "mesh_110": {
+      "asset": "f40248cc32ee591305cb.npz",
+      "source": "meshes/0135_Feetech_Servo_Motor_v1_5_Feetech_Servo_Horn_v1_1_body000.stl",
+      "source_sha256": "ebe50ce57fe98eeb6b02aa2a601d510121a7bc042e27409b9a608d04cf28b71f",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 63,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "ad9f1ff28e02565ac990579b2a83bd6632e47af56ea1ac0a145b0013add5bc2b",
+      "build_wall_s": 116.8
+    },
+    "mesh_111": {
+      "asset": "f40248cc32ee591305cb.npz",
+      "source": "meshes/0136_Feetech_Servo_Motor_v1_5_Feetech_Servo_Horn_v1_2_body000.stl",
+      "source_sha256": "ebe50ce57fe98eeb6b02aa2a601d510121a7bc042e27409b9a608d04cf28b71f",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 63,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "ad9f1ff28e02565ac990579b2a83bd6632e47af56ea1ac0a145b0013add5bc2b",
+      "build_wall_s": 116.8
+    },
+    "mesh_112": {
+      "asset": "d50f20d7694de0ed1555.npz",
+      "source": "meshes/0137_Feetech_Servo_Motor_v1_5_body000.stl",
+      "source_sha256": "17d13e5aabdfa0165d49a190868036abe0ca9107197a7deb63ea6777ce22019b",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 68,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "2b1ddf9f909157650b8640cf38384d3ab977ac0333caa3d80c7468e1cbadcabc",
+      "build_wall_s": 26.67
+    },
+    "mesh_113": {
+      "asset": "937bb93f7d06ff18e59f.npz",
+      "source": "meshes/0139_Gripper_Base_v1_1_body000.stl",
+      "source_sha256": "c9e52c0baa1009917b961c816954a06c150b7b52f31ab8e68ee8c84073852453",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 219,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "auto",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "eac865dcf67db1a1a9f8886497d1268c8dd9e8b6ed4fb8f704760f04bd736e11",
+      "build_wall_s": 125.93
+    },
+    "mesh_114": {
+      "asset": "a7236f1baf2053196ebb.npz",
+      "source": "meshes/0139_Gripper_Base_v1_1_body001.stl",
+      "source_sha256": "298a45b9c9e45abd36be64e89e41ac3972a3c5cf0afee094e3321f9b58d83489",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 6,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "1dadd46c578da4290bf5022dc5773b05c8e37ea96196d18be811fcecaae76695",
+      "build_wall_s": 1.69
+    },
+    "mesh_115": {
+      "asset": "f40248cc32ee591305cb.npz",
+      "source": "meshes/0140_Feetech_Servo_Motor_v1_6_Feetech_Servo_Horn_v1_1_body000.stl",
+      "source_sha256": "ebe50ce57fe98eeb6b02aa2a601d510121a7bc042e27409b9a608d04cf28b71f",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 63,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "ad9f1ff28e02565ac990579b2a83bd6632e47af56ea1ac0a145b0013add5bc2b",
+      "build_wall_s": 116.8
+    },
+    "mesh_116": {
+      "asset": "f40248cc32ee591305cb.npz",
+      "source": "meshes/0141_Feetech_Servo_Motor_v1_6_Feetech_Servo_Horn_v1_2_body000.stl",
+      "source_sha256": "ebe50ce57fe98eeb6b02aa2a601d510121a7bc042e27409b9a608d04cf28b71f",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 63,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "ad9f1ff28e02565ac990579b2a83bd6632e47af56ea1ac0a145b0013add5bc2b",
+      "build_wall_s": 116.8
+    },
+    "mesh_117": {
+      "asset": "d50f20d7694de0ed1555.npz",
+      "source": "meshes/0142_Feetech_Servo_Motor_v1_6_body000.stl",
+      "source_sha256": "17d13e5aabdfa0165d49a190868036abe0ca9107197a7deb63ea6777ce22019b",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 68,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "2b1ddf9f909157650b8640cf38384d3ab977ac0333caa3d80c7468e1cbadcabc",
+      "build_wall_s": 26.67
+    },
+    "mesh_118": {
+      "asset": "3f98490d26be17c6eef8.npz",
+      "source": "meshes/0144_Gripper_Finger_v1_1_body000.stl",
+      "source_sha256": "6dd8e730b37d9c4b0daaa0bf69639880e9ae5e0a64034a77a8e0913a7e5c8a6e",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 232,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "a819ebfd212b8051d86bae6edd95c5d3b61351d8d466196a05641718b4002abb",
+      "build_wall_s": 144.39
+    },
+    "mesh_119": {
+      "asset": "76e85be25822e7b4a9fa.npz",
+      "source": "meshes/0144_Gripper_Finger_v1_1_body001.stl",
+      "source_sha256": "c875cc671a190fa571c76e46629d2417fc08ff1d6573c89c07dfc288b8de94a0",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 5,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "0a6c52db1f81edb6fbdd4da6c2909031cb8ff535f5420f32781e9f1308ec66af",
+      "build_wall_s": 2.1
+    },
+    "mesh_120": {
+      "asset": "8ceb0943bd7c0d942383.npz",
+      "source": "meshes/0143_Motor_6_cap_v1_1_body000.stl",
+      "source_sha256": "f8618546dc633c785b447377a050bbe3512c1b7a3bc8b53e8f6cb39fd7870d6b",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 166,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "c224c2a073d3cdf9b8d8d6436dd12ecb5853776160058d42f0455cfd0347f567",
+      "build_wall_s": 195.17
+    },
+    "mesh_121": {
+      "asset": "0daff357babb133438e3.npz",
+      "source": "meshes/0133_Motor_4_support_v1_1_body000.stl",
+      "source_sha256": "8d308d464f2f948820e29a14f42495e05b709f83793f16f68d1b3982ca2d7388",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 108,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "74618e416af8cc9f79a833214137ca89d420678e6be79b2c830ee518754cde6b",
+      "build_wall_s": 36.12
+    },
+    "mesh_122": {
+      "asset": "e456422d48ffb8c00984.npz",
+      "source": "meshes/0128_Motor_3_support_v1_1_body000.stl",
+      "source_sha256": "3c60dee528a7fff750a2129d622af857f107c442d5d3f98dc15a64f4da1f9e72",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 80,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "4767b1417191e406421b15445e4a32ab9b108f824bb188460a99c4d65a0af439",
+      "build_wall_s": 38.86
+    },
+    "mesh_128": {
+      "asset": "cd3b6b31eab7ea3a2de1.npz",
+      "source": "meshes/0150_Shoulder_v1_2_body000.stl",
+      "source_sha256": "6d8bd1f662184d6d9c1acbafe84e7458928503348cc10bced5c36a85c441417c",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 305,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "8bf1bd321c5dc13dd3d49c265478b628951420cb35e9e92b90af7f11fc9aaf84",
+      "build_wall_s": 120.06
+    },
+    "mesh_129": {
+      "asset": "f40248cc32ee591305cb.npz",
+      "source": "meshes/0151_Feetech_Servo_Motor_v1_8_Feetech_Servo_Horn_v1_1_body000.stl",
+      "source_sha256": "ebe50ce57fe98eeb6b02aa2a601d510121a7bc042e27409b9a608d04cf28b71f",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 63,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "ad9f1ff28e02565ac990579b2a83bd6632e47af56ea1ac0a145b0013add5bc2b",
+      "build_wall_s": 116.8
+    },
+    "mesh_130": {
+      "asset": "f40248cc32ee591305cb.npz",
+      "source": "meshes/0152_Feetech_Servo_Motor_v1_8_Feetech_Servo_Horn_v1_2_body000.stl",
+      "source_sha256": "ebe50ce57fe98eeb6b02aa2a601d510121a7bc042e27409b9a608d04cf28b71f",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 63,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "ad9f1ff28e02565ac990579b2a83bd6632e47af56ea1ac0a145b0013add5bc2b",
+      "build_wall_s": 116.8
+    },
+    "mesh_131": {
+      "asset": "d50f20d7694de0ed1555.npz",
+      "source": "meshes/0153_Feetech_Servo_Motor_v1_8_body000.stl",
+      "source_sha256": "17d13e5aabdfa0165d49a190868036abe0ca9107197a7deb63ea6777ce22019b",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 68,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "2b1ddf9f909157650b8640cf38384d3ab977ac0333caa3d80c7468e1cbadcabc",
+      "build_wall_s": 26.67
+    },
+    "mesh_132": {
+      "asset": "abc01dde976dc10dbf45.npz",
+      "source": "meshes/0154_Motor_2_Support_v1_2_body000.stl",
+      "source_sha256": "0c8312ef6974b0f27d7f559d98397e18493d526919880096ed4004301bc22cd8",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 313,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "a080b369a4e0f4de41b2330d3df292837c676daa9b244fa0a9e5441a09d482a6",
+      "build_wall_s": 216.97
+    },
+    "mesh_133": {
+      "asset": "9291f3d09a99a0de0618.npz",
+      "source": "meshes/0155_Bicep_Left_v1_2_Component1_1_body000.stl",
+      "source_sha256": "76e324b440c095a896f4cb7273863b7bcc29d4e2231f37f0c3b1120522409725",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 394,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "a41ad3a7716ec42224b1e408204f6b66bd6e74c6a658c06e5cdf0f7becdbea1b",
+      "build_wall_s": 201.78
+    },
+    "mesh_134": {
+      "asset": "f9cbbde98c73cebb32a4.npz",
+      "source": "meshes/0157_Bicep_Right_v1_2_Component1_1_body000.stl",
+      "source_sha256": "0908c66ad725e3348b6aabd19fdeb0ad233ba80f28770f56eb789a9992e9b0b7",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 358,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "16791ba7c9a1f004c59369e8adad2a2c9eb3417521542eedc23221b8b47c1859",
+      "build_wall_s": 129.34
+    },
+    "mesh_135": {
+      "asset": "f40248cc32ee591305cb.npz",
+      "source": "meshes/0159_Feetech_Servo_Motor_v1_9_Feetech_Servo_Horn_v1_1_body000.stl",
+      "source_sha256": "ebe50ce57fe98eeb6b02aa2a601d510121a7bc042e27409b9a608d04cf28b71f",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 63,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "ad9f1ff28e02565ac990579b2a83bd6632e47af56ea1ac0a145b0013add5bc2b",
+      "build_wall_s": 116.8
+    },
+    "mesh_136": {
+      "asset": "f40248cc32ee591305cb.npz",
+      "source": "meshes/0160_Feetech_Servo_Motor_v1_9_Feetech_Servo_Horn_v1_2_body000.stl",
+      "source_sha256": "ebe50ce57fe98eeb6b02aa2a601d510121a7bc042e27409b9a608d04cf28b71f",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 63,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "ad9f1ff28e02565ac990579b2a83bd6632e47af56ea1ac0a145b0013add5bc2b",
+      "build_wall_s": 116.8
+    },
+    "mesh_137": {
+      "asset": "d50f20d7694de0ed1555.npz",
+      "source": "meshes/0161_Feetech_Servo_Motor_v1_9_body000.stl",
+      "source_sha256": "17d13e5aabdfa0165d49a190868036abe0ca9107197a7deb63ea6777ce22019b",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 68,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "2b1ddf9f909157650b8640cf38384d3ab977ac0333caa3d80c7468e1cbadcabc",
+      "build_wall_s": 26.67
+    },
+    "mesh_138": {
+      "asset": "c1c191ce00bdc5294b4d.npz",
+      "source": "meshes/0163_Forearm_v1_2_body000.stl",
+      "source_sha256": "e85b643ce79604ccbcbbe7ec7bc51913bd26a5d74e56af6ed15e5c27313d8900",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 425,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "bb47d833a601fac4c7abe28bb53cd40a083e870463960413a21aac35873a56f0",
+      "build_wall_s": 160.27
+    },
+    "mesh_139": {
+      "asset": "f40248cc32ee591305cb.npz",
+      "source": "meshes/0164_Feetech_Servo_Motor_v1_10_Feetech_Servo_Horn_v1_1_body000.stl",
+      "source_sha256": "ebe50ce57fe98eeb6b02aa2a601d510121a7bc042e27409b9a608d04cf28b71f",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 63,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "ad9f1ff28e02565ac990579b2a83bd6632e47af56ea1ac0a145b0013add5bc2b",
+      "build_wall_s": 116.8
+    },
+    "mesh_140": {
+      "asset": "f40248cc32ee591305cb.npz",
+      "source": "meshes/0165_Feetech_Servo_Motor_v1_10_Feetech_Servo_Horn_v1_2_body000.stl",
+      "source_sha256": "ebe50ce57fe98eeb6b02aa2a601d510121a7bc042e27409b9a608d04cf28b71f",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 63,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "ad9f1ff28e02565ac990579b2a83bd6632e47af56ea1ac0a145b0013add5bc2b",
+      "build_wall_s": 116.8
+    },
+    "mesh_141": {
+      "asset": "d50f20d7694de0ed1555.npz",
+      "source": "meshes/0166_Feetech_Servo_Motor_v1_10_body000.stl",
+      "source_sha256": "17d13e5aabdfa0165d49a190868036abe0ca9107197a7deb63ea6777ce22019b",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 68,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "2b1ddf9f909157650b8640cf38384d3ab977ac0333caa3d80c7468e1cbadcabc",
+      "build_wall_s": 26.67
+    },
+    "mesh_142": {
+      "asset": "eaee5fdabd6e5ed3885a.npz",
+      "source": "meshes/0168_Wrist_v1_2_body000.stl",
+      "source_sha256": "df1146092ddf7becf236aab9bc50e59f51f5eccd5dea022fa3a320caa94ef97c",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 379,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "abaebbbf0a1f78550d3bbef842f68033ff46a2affe35b4866f011997dc637258",
+      "build_wall_s": 254.18
+    },
+    "mesh_143": {
+      "asset": "cd437148eccb74880511.npz",
+      "source": "meshes/0172_Motor_5_support_v1_2_body000.stl",
+      "source_sha256": "8e3c42c7364d488ee22c403e3bfe65f37c9c6d64fe811a900a8ebd0d7745816e",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 64,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "bfc8c218e8baaf423e44abb37560d80b7d894d93792c272be990a05f3fdae84b",
+      "build_wall_s": 34.23
+    },
+    "mesh_144": {
+      "asset": "f40248cc32ee591305cb.npz",
+      "source": "meshes/0169_Feetech_Servo_Motor_v1_11_Feetech_Servo_Horn_v1_1_body000.stl",
+      "source_sha256": "ebe50ce57fe98eeb6b02aa2a601d510121a7bc042e27409b9a608d04cf28b71f",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 63,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "ad9f1ff28e02565ac990579b2a83bd6632e47af56ea1ac0a145b0013add5bc2b",
+      "build_wall_s": 116.8
+    },
+    "mesh_145": {
+      "asset": "f40248cc32ee591305cb.npz",
+      "source": "meshes/0170_Feetech_Servo_Motor_v1_11_Feetech_Servo_Horn_v1_2_body000.stl",
+      "source_sha256": "ebe50ce57fe98eeb6b02aa2a601d510121a7bc042e27409b9a608d04cf28b71f",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 63,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "ad9f1ff28e02565ac990579b2a83bd6632e47af56ea1ac0a145b0013add5bc2b",
+      "build_wall_s": 116.8
+    },
+    "mesh_146": {
+      "asset": "d50f20d7694de0ed1555.npz",
+      "source": "meshes/0171_Feetech_Servo_Motor_v1_11_body000.stl",
+      "source_sha256": "17d13e5aabdfa0165d49a190868036abe0ca9107197a7deb63ea6777ce22019b",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 68,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "2b1ddf9f909157650b8640cf38384d3ab977ac0333caa3d80c7468e1cbadcabc",
+      "build_wall_s": 26.67
+    },
+    "mesh_147": {
+      "asset": "5c05102110ea29eb9008.npz",
+      "source": "meshes/0173_Gripper_Base_v1_2_body002.stl",
+      "source_sha256": "db9bfcc0d3fd0ec0a1f0f2c3d3001c0ead26fa90fe9106f3dbfae9e1fed7f632",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 253,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "auto",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "24c61d2951c74463fc25df3c2abce4800d6eeaea2e932cfbc24151f4eba65996",
+      "build_wall_s": 181.83
+    },
+    "mesh_148": {
+      "asset": "f1a88a97d218556e98e1.npz",
+      "source": "meshes/0173_Gripper_Base_v1_2_body003.stl",
+      "source_sha256": "47e67f70cfd942297cd8900d605d3df935444ec728f7de281f1f1821c9e3b468",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 7,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "6ab9a90030b0a8281fb2fa7aa29ed04b0b41ea138ef922acb06fc86e6563e8e3",
+      "build_wall_s": 1.65
+    },
+    "mesh_149": {
+      "asset": "f40248cc32ee591305cb.npz",
+      "source": "meshes/0174_Feetech_Servo_Motor_v1_12_Feetech_Servo_Horn_v1_1_body000.stl",
+      "source_sha256": "ebe50ce57fe98eeb6b02aa2a601d510121a7bc042e27409b9a608d04cf28b71f",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 63,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "ad9f1ff28e02565ac990579b2a83bd6632e47af56ea1ac0a145b0013add5bc2b",
+      "build_wall_s": 116.8
+    },
+    "mesh_150": {
+      "asset": "f40248cc32ee591305cb.npz",
+      "source": "meshes/0175_Feetech_Servo_Motor_v1_12_Feetech_Servo_Horn_v1_2_body000.stl",
+      "source_sha256": "ebe50ce57fe98eeb6b02aa2a601d510121a7bc042e27409b9a608d04cf28b71f",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 63,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "ad9f1ff28e02565ac990579b2a83bd6632e47af56ea1ac0a145b0013add5bc2b",
+      "build_wall_s": 116.8
+    },
+    "mesh_151": {
+      "asset": "d50f20d7694de0ed1555.npz",
+      "source": "meshes/0176_Feetech_Servo_Motor_v1_12_body000.stl",
+      "source_sha256": "17d13e5aabdfa0165d49a190868036abe0ca9107197a7deb63ea6777ce22019b",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 68,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "2b1ddf9f909157650b8640cf38384d3ab977ac0333caa3d80c7468e1cbadcabc",
+      "build_wall_s": 26.67
+    },
+    "mesh_152": {
+      "asset": "3f98490d26be17c6eef8.npz",
+      "source": "meshes/0178_Gripper_Finger_v1_2_body000.stl",
+      "source_sha256": "6dd8e730b37d9c4b0daaa0bf69639880e9ae5e0a64034a77a8e0913a7e5c8a6e",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 232,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "a819ebfd212b8051d86bae6edd95c5d3b61351d8d466196a05641718b4002abb",
+      "build_wall_s": 144.39
+    },
+    "mesh_153": {
+      "asset": "76e85be25822e7b4a9fa.npz",
+      "source": "meshes/0178_Gripper_Finger_v1_2_body001.stl",
+      "source_sha256": "c875cc671a190fa571c76e46629d2417fc08ff1d6573c89c07dfc288b8de94a0",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 5,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "0a6c52db1f81edb6fbdd4da6c2909031cb8ff535f5420f32781e9f1308ec66af",
+      "build_wall_s": 2.1
+    },
+    "mesh_154": {
+      "asset": "d6d82133054f203b980b.npz",
+      "source": "meshes/0177_Motor_6_cap_v1_2_body001.stl",
+      "source_sha256": "3d538bdb14c1f5e9979c435f59cc3a1ec7d664c79448aeece74a680d3c92fb16",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 141,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "0a49059ee248957d6dee4ee77f239c49774fcf26c407a0c12dd7cef98bb07024",
+      "build_wall_s": 159.97
+    },
+    "mesh_155": {
+      "asset": "0daff357babb133438e3.npz",
+      "source": "meshes/0167_Motor_4_support_v1_2_body000.stl",
+      "source_sha256": "8d308d464f2f948820e29a14f42495e05b709f83793f16f68d1b3982ca2d7388",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 108,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "74618e416af8cc9f79a833214137ca89d420678e6be79b2c830ee518754cde6b",
+      "build_wall_s": 36.12
+    },
+    "mesh_156": {
+      "asset": "e456422d48ffb8c00984.npz",
+      "source": "meshes/0162_Motor_3_support_v1_2_body000.stl",
+      "source_sha256": "3c60dee528a7fff750a2129d622af857f107c442d5d3f98dc15a64f4da1f9e72",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 80,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "4767b1417191e406421b15445e4a32ab9b108f824bb188460a99c4d65a0af439",
+      "build_wall_s": 38.86
+    },
+    "mesh_94": {
+      "asset": "cd3b6b31eab7ea3a2de1.npz",
+      "source": "meshes/0116_Shoulder_v1_1_body000.stl",
+      "source_sha256": "6d8bd1f662184d6d9c1acbafe84e7458928503348cc10bced5c36a85c441417c",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 305,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "8bf1bd321c5dc13dd3d49c265478b628951420cb35e9e92b90af7f11fc9aaf84",
+      "build_wall_s": 120.06
+    },
+    "mesh_95": {
+      "asset": "f40248cc32ee591305cb.npz",
+      "source": "meshes/0117_Feetech_Servo_Motor_v1_2_Feetech_Servo_Horn_v1_1_body000.stl",
+      "source_sha256": "ebe50ce57fe98eeb6b02aa2a601d510121a7bc042e27409b9a608d04cf28b71f",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 63,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "ad9f1ff28e02565ac990579b2a83bd6632e47af56ea1ac0a145b0013add5bc2b",
+      "build_wall_s": 116.8
+    },
+    "mesh_96": {
+      "asset": "f40248cc32ee591305cb.npz",
+      "source": "meshes/0118_Feetech_Servo_Motor_v1_2_Feetech_Servo_Horn_v1_2_body000.stl",
+      "source_sha256": "ebe50ce57fe98eeb6b02aa2a601d510121a7bc042e27409b9a608d04cf28b71f",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 63,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "ad9f1ff28e02565ac990579b2a83bd6632e47af56ea1ac0a145b0013add5bc2b",
+      "build_wall_s": 116.8
+    },
+    "mesh_97": {
+      "asset": "d50f20d7694de0ed1555.npz",
+      "source": "meshes/0119_Feetech_Servo_Motor_v1_2_body000.stl",
+      "source_sha256": "17d13e5aabdfa0165d49a190868036abe0ca9107197a7deb63ea6777ce22019b",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 68,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "2b1ddf9f909157650b8640cf38384d3ab977ac0333caa3d80c7468e1cbadcabc",
+      "build_wall_s": 26.67
+    },
+    "mesh_98": {
+      "asset": "abc01dde976dc10dbf45.npz",
+      "source": "meshes/0120_Motor_2_Support_v1_1_body000.stl",
+      "source_sha256": "0c8312ef6974b0f27d7f559d98397e18493d526919880096ed4004301bc22cd8",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 313,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "a080b369a4e0f4de41b2330d3df292837c676daa9b244fa0a9e5441a09d482a6",
+      "build_wall_s": 216.97
+    },
+    "mesh_99": {
+      "asset": "9291f3d09a99a0de0618.npz",
+      "source": "meshes/0121_Bicep_Left_v1_1_Component1_1_body000.stl",
+      "source_sha256": "76e324b440c095a896f4cb7273863b7bcc29d4e2231f37f0c3b1120522409725",
+      "scale": [
+        0.001,
+        0.001,
+        0.001
+      ],
+      "parts": 394,
+      "parameters": {
+        "threshold": 0.001,
+        "real_metric": true,
+        "preprocess_mode": "off",
+        "resolution": 1000,
+        "mcts_nodes": 10,
+        "mcts_iterations": 10,
+        "mcts_max_depth": 2,
+        "seed": 7
+      },
+      "asset_sha256": "a41ad3a7716ec42224b1e408204f6b66bd6e74c6a658c06e5cdf0f7becdbea1b",
+      "build_wall_s": 201.78
+    }
+  }
+}

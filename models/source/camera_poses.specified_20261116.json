@@ -1,0 +1,199 @@
+{
+  "front_left": {
+    "body": "robot_root",
+    "pos": [
+      0.162502,
+      -0.112159,
+      0.80969
+    ],
+    "device": "/dev/cameraFrontLeft",
+    "resolution_wh": [
+      320,
+      240
+    ],
+    "fovy_deg": 92.20422750397202,
+    "intrinsics_status": "120 degree diagonal owner-supplied lens specification converted to vertical FOV for 320x240",
+    "calibration_status": "owner-supplied mount specification; physical optical calibration pending",
+    "mount_yaw_deg": 15,
+    "mount_pitch_deg": -20,
+    "roll_deg": 0,
+    "position_source": "preserved manual dome placement",
+    "orientation_source": "Nick Builds, 2026-10-01, conversation supplied by owner: eyes 15 degrees outward / 20 degrees down; wrists 16.9 degrees inward / 2.5 degrees up; restored archived nominal mount quaternion",
+    "quat_wxyz": [
+      -0.4095760221444959,
+      -0.2867882181755231,
+      0.4967317648921541,
+      0.7094064799162225
+    ],
+    "diagonal_fov_deg": 120,
+    "projection_model": "ideal rectilinear pinhole at 4:3; physical distortion and crop unmeasured",
+    "superseded_visual_fit": {
+      "file": "camera_poses.visual_fit_20261001.json",
+      "key": "front_left"
+    }
+  },
+  "front_right": {
+    "body": "robot_root",
+    "pos": [
+      0.125593,
+      -0.156471,
+      0.816753
+    ],
+    "device": "/dev/cameraFrontRight",
+    "resolution_wh": [
+      320,
+      240
+    ],
+    "fovy_deg": 92.20422750397202,
+    "intrinsics_status": "120 degree diagonal owner-supplied lens specification converted to vertical FOV for 320x240",
+    "calibration_status": "owner-supplied mount specification; physical optical calibration pending",
+    "mount_yaw_deg": -15,
+    "mount_pitch_deg": -20,
+    "roll_deg": 0,
+    "position_source": "preserved manual dome placement",
+    "orientation_source": "Nick Builds, 2026-10-01, conversation supplied by owner: eyes 15 degrees outward / 20 degrees down; wrists 16.9 degrees inward / 2.5 degrees up; restored archived nominal mount quaternion",
+    "quat_wxyz": [
+      -0.21201214989665468,
+      -0.14845250554968456,
+      0.5540322932223234,
+      0.7912401152362238
+    ],
+    "diagonal_fov_deg": 120,
+    "projection_model": "ideal rectilinear pinhole at 4:3; physical distortion and crop unmeasured",
+    "superseded_visual_fit": {
+      "file": "camera_poses.visual_fit_20261001.json",
+      "key": "front_right"
+    }
+  },
+  "wrist_left": {
+    "body": "Gripper_Base_v1_1",
+    "pos": [
+      0.021286129870275273,
+      0.050042476152180125,
+      -0.0023622812097335378
+    ],
+    "device": "/dev/cameraWristLeft",
+    "resolution_wh": [
+      320,
+      240
+    ],
+    "fovy_deg": 92.20422750397202,
+    "intrinsics_status": "120 degree diagonal owner-supplied lens specification converted to vertical FOV for 320x240",
+    "calibration_status": "owner-supplied mount specification; physical optical calibration pending",
+    "mount_inward_deg": 16.9,
+    "mount_up_deg": 2.5,
+    "roll_deg": 90,
+    "position_source": "centre of 25 mm CAD camera opening; optical centre depth unmeasured",
+    "orientation_source": "Nick Builds, 2026-10-01, conversation supplied by owner: eyes 15 degrees outward / 20 degrees down; wrists 16.9 degrees inward / 2.5 degrees up; restored archived nominal mount quaternion",
+    "roll_status": "coarse visual estimate; fine roll not calibrated",
+    "quat_wxyz": [
+      0.6846661426661184,
+      -0.10614742554168298,
+      -0.7138631067862977,
+      -0.10180600133089567
+    ],
+    "diagonal_fov_deg": 120,
+    "projection_model": "ideal rectilinear pinhole at 4:3; physical distortion and crop unmeasured",
+    "superseded_visual_fit": {
+      "file": "camera_poses.visual_fit_20261001.json",
+      "key": "wrist_left"
+    }
+  },
+  "wrist_right": {
+    "body": "Gripper_Base_v1_2",
+    "pos": [
+      -0.05004247658346406,
+      -0.021286129871331,
+      -0.0023622810530417437
+    ],
+    "device": "/dev/cameraWristRight",
+    "resolution_wh": [
+      320,
+      240
+    ],
+    "fovy_deg": 92.20422750397202,
+    "intrinsics_status": "120 degree diagonal owner-supplied lens specification converted to vertical FOV for 320x240",
+    "calibration_status": "owner-supplied mount specification; physical optical calibration pending",
+    "mount_inward_deg": 16.9,
+    "mount_up_deg": 2.5,
+    "roll_deg": 270,
+    "position_source": "centre of 25 mm CAD camera opening; optical centre depth unmeasured",
+    "orientation_source": "Nick Builds, 2026-10-01, conversation supplied by owner: eyes 15 degrees outward / 20 degrees down; wrists 16.9 degrees inward / 2.5 degrees up; restored archived nominal mount quaternion",
+    "roll_status": "coarse visual estimate; fine roll not calibrated",
+    "quat_wxyz": [
+      -0.41214435842148556,
+      0.5798350080535059,
+      -0.4297198792414693,
+      -0.5561197862346114
+    ],
+    "diagonal_fov_deg": 120,
+    "projection_model": "ideal rectilinear pinhole at 4:3; physical distortion and crop unmeasured",
+    "superseded_visual_fit": {
+      "file": "camera_poses.visual_fit_20261001.json",
+      "key": "wrist_right"
+    }
+  },
+  "bottom": {
+    "body": "robot_root",
+    "pos": [
+      0.14637110370561532,
+      -0.14637110370561532,
+      0.019
+    ],
+    "device": "/dev/cameraBottom",
+    "resolution_wh": [
+      320,
+      240
+    ],
+    "fovy_deg": 90,
+    "intrinsics_status": "unmeasured; retained previous 90 degree vertical preview FOV",
+    "calibration_status": "manual estimate; base mounting angles unmeasured",
+    "position_source": "CAD base camera opening at exterior shell; optical depth unmeasured",
+    "orientation_source": "preserved manual aim; image-up corrected to world-up using upright real feed",
+    "quat_wxyz": [
+      -0.34875582740801137,
+      -0.3995298873828259,
+      0.6386851596161645,
+      0.5575181690518205
+    ]
+  },
+  "_meta": {
+    "schema_version": 3,
+    "frame": "body",
+    "units": "metres",
+    "camera_convention": "mujoco: +X right, +Y up, -Z forward; quaternion wxyz",
+    "source": "Owner-supplied mechanical mount angles and 120 degree diagonal lens specification, applied 2026-11-16; prior visual fits archived separately",
+    "calibration_status": "Specified head/wrist mounts and ideal 120 degree diagonal FOV; physical intrinsics/extrinsics unverified; bottom unchanged",
+    "nominal_camera_model": "Innomaker-U20CAM-720P; verified over SSH on all five devices",
+    "lens_reference": "https://www.inno-maker.com/product/u20cam-720p/",
+    "remaining": [
+      "independent intrinsics and lens distortion calibration",
+      "camera optical centre versus CAD mount",
+      "multi-pose wrist-camera and encoder-to-CAD calibration",
+      "gripper normalized-unit mapping",
+      "bottom camera feature fit"
+    ],
+    "robot_forward_in_root": [
+      0.7071067811865475,
+      -0.7071067811865475,
+      0
+    ],
+    "lens_specification": {
+      "diagonal_fov_deg": 120,
+      "horizontal_fov_deg": 102,
+      "manufacturer_aperture_f_number": 2.2,
+      "user_listing_aperture_f_number": 2.8,
+      "reference": "https://www.inno-maker.com/product/u20cam-720p/",
+      "rendering_assumption": "The requested 120 degree diagonal FOV is authoritative for four 4:3 training cameras; 102 degree horizontal listing is not enforced simultaneously because it is incompatible with this ideal pinhole aspect ratio."
+    },
+    "capture_mode": {
+      "width": 320,
+      "height": 240,
+      "format": "YUYV",
+      "fps": 30,
+      "application_crop_found": false,
+      "firmware_crop_status": "unverified"
+    },
+    "angle_convention": "Head: robot-frame yaw +/-15 degrees, elevation -20 degrees, zero roll. Wrists: archived CAD-frame nominal mechanical rotations (16.9 degrees sideways, then 2.5 degrees upward); image roll retained at its coarse 90/270 degree estimate."
+  }
+}

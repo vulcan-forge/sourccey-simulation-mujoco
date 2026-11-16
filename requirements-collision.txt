@@ -1,0 +1,2 @@
+# Offline collision-asset generation only; not required to play a built scene.
+coacd==1.0.14

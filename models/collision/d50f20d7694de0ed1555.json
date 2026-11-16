@@ -1,0 +1,23 @@
+{
+  "asset": "d50f20d7694de0ed1555.npz",
+  "source": "meshes/0127_Feetech_Servo_Motor_v1_3_body000.stl",
+  "source_sha256": "17d13e5aabdfa0165d49a190868036abe0ca9107197a7deb63ea6777ce22019b",
+  "scale": [
+    0.001,
+    0.001,
+    0.001
+  ],
+  "parts": 68,
+  "parameters": {
+    "threshold": 0.001,
+    "real_metric": true,
+    "preprocess_mode": "off",
+    "resolution": 1000,
+    "mcts_nodes": 10,
+    "mcts_iterations": 10,
+    "mcts_max_depth": 2,
+    "seed": 7
+  },
+  "asset_sha256": "2b1ddf9f909157650b8640cf38384d3ab977ac0333caa3d80c7468e1cbadcabc",
+  "build_wall_s": 26.67
+}

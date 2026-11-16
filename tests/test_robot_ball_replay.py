@@ -489,6 +489,163 @@ def test_long_intentional_dwell_is_not_a_stall(slow_robot):
     assert link.sent[-1] == dict.fromkeys(KEYS, 0.)
 
 
+def test_feedback_recovery_freezes_path_then_resumes_with_bounded_steps(slow_robot):
+    link, clock = slow_robot
+    original_read = link.read
+    reads = [0]
+    def interrupted_read():
+        reads[0] += 1
+        recovered = reads[0] == 30
+        if recovered:
+            clock[0] += 2.
+        observed = original_read()
+        if recovered:
+            observed['feedback_gap_s'] = 2.
+        return observed
+    link.read = interrupted_read
+    trace = []
+    timing = replay(link, aggressive_curve(), 100., trace.append)
+    before, after = trace[28:30]
+    assert after['observed']['feedback_gap_s'] == 2.
+    assert after['wall_elapsed_s'] - before['wall_elapsed_s'] > 2.
+    assert after['trajectory_s'] == before['trajectory_s']
+    assert after['commanded'] == before['commanded']
+    assert link.max_command_error <= 5.
+    assert trace[-1]['trajectory_s'] == aggressive_curve().x[-1]
+    assert timing['feedback_pauses'] == 1
+    assert timing['feedback_pause_s'] == 2.
+    assert timing['actual_duration_s'] == trace[-1]['wall_elapsed_s']
+
+
+@pytest.mark.parametrize('fault', ['tracking', 'base', 'elevator'])
+def test_recovered_feedback_is_checked_before_any_new_target(startup_robot, fault):
+    link, trace = startup_robot, []
+    link.jitter = 0.
+    link.current['positions'] = dict.fromkeys(KEYS, 0.)
+    original_read = link.read
+    def interrupted_read():
+        observed = original_read()
+        if link.reads == 6:
+            observed['feedback_gap_s'] = 2.
+            if fault == 'tracking':
+                observed['positions'][KEYS[0]] += 11.
+            elif fault == 'base':
+                observed['base_velocity'][0] = .1
+            else:
+                observed['elevator'] += 3.
+        return observed
+    link.read = interrupted_read
+    with pytest.raises(ValueError):
+        replay(link, aggressive_curve(), 100., trace.append)
+    assert len(trace) == 5
+    assert link.sent[-1] == link.sent[-2] == trace[-1]['commanded']
+
+
+def test_feedback_gap_does_not_count_toward_final_settled_time(slow_robot):
+    link, clock = slow_robot
+    original_read = link.read
+    gap_at = []
+    def interrupted_read():
+        if not gap_at and clock[0] >= .8:
+            clock[0] += 2.
+            gap_at.append(clock[0])
+            observed = original_read()
+            observed['feedback_gap_s'] = 2.
+            return observed
+        return original_read()
+    link.read = interrupted_read
+    curve = PchipInterpolator([0., .1], np.zeros((2, len(KEYS))), axis=0)
+    trace = []
+    replay(link, curve, 100., trace.append)
+    assert gap_at
+    recovered = next(r for r in trace if r['observed'].get('feedback_gap_s'))
+    assert trace[-1]['wall_elapsed_s'] - recovered['wall_elapsed_s'] >= 1.
+
+
+def test_feedback_gap_restarts_initial_stationary_hold(startup_robot):
+    args = fixture()
+    link, trace = startup_robot, []
+    original_read = link.read
+    def interrupted_read():
+        observed = original_read()
+        if link.reads == 10:
+            observed['feedback_gap_s'] = 2.
+        return observed
+    link.read = interrupted_read
+    go_to_start(link, args[4], args[5], 'robot', 1., trace.append)
+    hold = [r for r in trace if r['phase'] == 'hold-current']
+    resumed = next(i for i, r in enumerate(hold) if r['observed'].get('feedback_gap_s'))
+    assert len(hold) - resumed >= 15  # One fresh second at this fake clock's 15 Hz.
+
+
+@pytest.mark.parametrize('read_cost,processing_cost', [(.01, .012), (.02, .008)])
+def test_feedback_and_render_work_do_not_add_an_extra_sleep_to_every_command(monkeypatch,
+                                                                            read_cost, processing_cost):
+    clock = [0.]
+    monkeypatch.setattr('examples.robot_ball_replay.time.monotonic', lambda: clock[0])
+    monkeypatch.setattr('examples.robot_ball_replay.time.sleep', lambda dt: clock.__setitem__(0, clock[0] + dt))
+
+    class Link:
+        def __init__(self):
+            self.current = dict.fromkeys(KEYS, 0.)
+            self.sent_at = []
+        def read(self):
+            clock[0] += read_cost
+            return {'positions': self.current.copy(), 'elevator': 100., 'base_velocity': [0.] * 4}
+        def send(self, target):
+            self.current = target.copy()
+            self.sent_at.append(clock[0])
+    def render_and_log(row):
+        clock[0] += processing_cost
+    poses = np.zeros((2, len(KEYS)))
+    poses[1, 0] = 2.
+    link = Link()
+    timing = replay(link, PchipInterpolator([0., 2.], poses, axis=0), 100., render_and_log)
+    # Requested 2 s motion plus the mandatory 1 s final hold. The old fixed
+    # sleep added all read/render work on top and took over 4 s in this case.
+    assert 3. <= timing['actual_duration_s'] < 3.15
+    intervals = np.diff(link.sent_at[:-1])  # Exclude the final same-target hold.
+    assert intervals == pytest.approx(np.full(len(intervals), 1 / 30), abs=1e-9)
+    assert timing['feedback_pause_s'] == 0
+
+
+def test_over_budget_processing_never_causes_a_command_catch_up_burst(monkeypatch):
+    clock = [0.]
+    monkeypatch.setattr('examples.robot_ball_replay.time.monotonic', lambda: clock[0])
+    monkeypatch.setattr('examples.robot_ball_replay.time.sleep', lambda dt: clock.__setitem__(0, clock[0] + dt))
+    trace, sent_at = [], []
+    class Link:
+        current = dict.fromkeys(KEYS, 0.)
+        def read(self):
+            return {'positions': self.current.copy(), 'elevator': 100., 'base_velocity': [0.] * 4}
+        def send(self, target):
+            self.current = target.copy()
+            sent_at.append(clock[0])
+    def expensive_draw(row):
+        trace.append(row)
+        clock[0] += .08
+    poses = np.zeros((2, len(KEYS)))
+    poses[1, 0] = 2.
+    replay(Link(), PchipInterpolator([0., 1.], poses, axis=0), 100., expensive_draw)
+    assert all(dt >= .08 - 1e-9 for dt in np.diff(sent_at[:-1]))
+    assert all(0 <= b['trajectory_s'] - a['trajectory_s'] <= 1 / 30 + 1e-9
+               for a, b in zip(trace, trace[1:]))
+    assert max(r['command_step_units'] for r in trace) <= 1.
+
+
+def test_command_step_cap_is_not_reported_as_real_arm_lag(startup_robot):
+    link = startup_robot
+    link.jitter = 0.
+    link.current['positions'] = dict.fromkeys(KEYS, 0.)
+    poses = np.zeros((2, len(KEYS)))
+    poses[1, 0] = 30.
+    trace = []
+    replay(link, PchipInterpolator([0., .3], poses, axis=0), 100., trace.append)
+    assert any(r['limit_reason'] == 'command-step' for r in trace)
+    assert not any(r['waiting_for_tracking'] for r in trace)
+    assert all(r['tracking']['error_units'] <= 1. for r in trace)
+
+
 @pytest.mark.parametrize("timeout", [0., -1., float("nan"), float("inf")])
 def test_invalid_stall_timeout_sends_no_commands(startup_robot, timeout):
     args = fixture()

@@ -1,0 +1,17 @@
+{
+  "captured_date": "2026-11-12",
+  "source": "Installed lerobot_robot_sourccey on sourccey robot; True Calibration is full_reset=True",
+  "license": "Apache-2.0; see ../SOURCCEY_PLUGIN_LICENSE",
+  "original_sha256": {
+    "sourccey_follower_calibrator.py": "4118c8535efa899737639e94cd6b639925fee7d654d83cd75d8b32ce9053664d",
+    "sourccey_z_calibrator.py": "eb61a45401887a395e7589fccd605d35f1407bf42002e72eb1004af8b965e375",
+    "sourccey.py": "a6ceebf9cd0c7eafd4324a8d2757b4fdb66341708c89952133e67bcf3c6366dc",
+    "sourccey_follower.py": "4c0b1a8c3957b9d1c4bd73c6de242e06fb5bd6f8cc7a011424857c7ddbded21e",
+    "config_sourccey_follower.py": "693a564ffa0d0cf24cfc6b4dfc54c1e36af3fdca55be7d671b3e40baefe2b46a",
+    "models.py": "040e9f56f532e825632f4f1d5f392a9fe4d66aacd03cc389a6f88ac257123b29"
+  },
+  "reference_sha256": {
+    "arm_motion.py.txt": "d8fecbbab9085c8444052d3dd22f4624827f3679aeed3f1af372ba0f5c74b481",
+    "lift.py.txt": "5e041260f6d64918123ad118a5a98b84ec1222767a18afa2dffd69f9f63d2efd"
+  }
+}

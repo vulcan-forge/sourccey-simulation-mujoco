@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "id": "feetech_sts3250_unopened_box",
+  "description": "Unopened Feetech STS3250 servo package, with the servo still inside",
+  "dimensions_mm": {
+    "width": 58.8,
+    "depth_front_to_back": 38.4,
+    "height": 58.4,
+    "provenance": "Owner measurements; approximate. These override the supplied generic package-size estimate."
+  },
+  "mass_kg": 0.12,
+  "mass_provenance": "Owner-supplied estimate for the complete unopened package, including the servo; not a manufacturer specification",
+  "surface": {
+    "material": "cardboard / paperboard",
+    "finish": "matte, slightly textured",
+    "provenance": "Owner-supplied package description"
+  },
+  "contact_estimates": {
+    "rubber_gripper": {
+      "static_friction_coefficient": 0.45,
+      "dynamic_friction_coefficient": 0.35
+    },
+    "coefficient_of_restitution": 0.05,
+    "table_sliding_friction_coefficient": null,
+    "provenance": "Owner-supplied estimates, not measured coefficients or manufacturer specifications",
+    "interpretation": "Rubber-gripper friction describes that material pair, not the table contact. These are physical estimates, not an MJCF friction vector; MuJoCo requires separate choices for sliding, torsional, and rolling friction and contact solver parameters."
+  },
+  "mass_distribution": {
+    "center_of_mass_offset_mm": null,
+    "inertia_kg_m2": null,
+    "note": "The servo and packaging mass distribution is unmeasured; a centered uniform rigid box would be an explicit initial approximation."
+  }
+}

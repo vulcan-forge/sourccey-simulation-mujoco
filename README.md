@@ -59,6 +59,12 @@ Other commands:
 .\run.cmd --full-elevator-range
 ```
 
+For the separate True Calibration comparison scene, run
+`python -m examples.true_calibration`. It runs the robot's installed lift and
+arm calibration motion controllers against MuJoCo, then reports which stops it
+found. See [the scene notes](docs/true_calibration.md) for the gripper probe and
+the distinction between existing angle limits and physical hand contact.
+
 `--no-panel` uses only MuJoCo's native UI. `--no-camera-feeds` starts the
 control panel without the camera preview; its **Camera feeds** button can
 still open it later. `--no-traction` disables the equivalent
@@ -94,9 +100,15 @@ with mujoco.Renderer(sim.model, height=240, width=320) as renderer:
 
 The 320x240 poses, FOVs, and provenance notes are retained in
 [camera_poses.json](models/source/camera_poses.json). The source describes the
-head and wrist fits as provisional and the bottom orientation as a manual
-estimate; these are simulated pinhole views, not independently validated
-physical camera feeds. Depending on the arm pose, parts of the hands can
+head yaw/mean pitch as 15 degrees outward / 20 degrees down, with image roll
+and effective video optics fitted to the owner's six benchmark datasets.
+The four 320x240 views use an approximate 45.87-degree vertical pinhole FOV.
+The supplied 120-degree lens DFOV remains a nominal reference; it did not
+reproduce the recorded video framing when applied literally. Wrist mounts keep
+their CAD opening centers, with bounded orientation corrections to match the
+visible gripper. See [the comparisons and fitting limits](docs/benchmark_camera_fit.md).
+Physical optical calibration is pending; the bottom camera is unchanged.
+Depending on arm pose, parts of the hands can
 appear in the dome feeds.
 
 ## Forward planar lidar
@@ -150,6 +162,25 @@ holds the final view. `--headless --snapshot artifacts/lidar_room.png` runs a
 fast measured check and saves the combined view. The fan is render-only; lidar
 returns still come from collision raycasts. For clarity, fan lines stop at
 2.2 m in the 3D view even though scans retain the full 12 m range.
+
+## Measured box pickup: test A
+
+Run `box-pickup-a.cmd`, or `python -m examples.box_pickup --view` after activating
+the virtual environment. This separate scene uses the benchmark's full-size
+table and the owner's 58.8 x 38.4 x 58.4 mm unopened servo box, with estimated
+120 g mass. The stationary robot raises its left arm, grasps through CAD finger
+contact, lifts, and holds. Physics is computed before smooth playback; **P**
+pauses, **R** replays, **1** shows the overview, and **2** shows the gripper.
+Use `--replay --view` to reuse the matching saved run. See
+[the setup and success criteria](docs/box_pickup.md).
+
+For the small-rotation training curriculum, run `box-training.cmd` to review
+the generated ten-scene batch, or `python -m examples.box_training --review`.
+**N/B** switch instances, **R** replays, and **P** pauses. Four onboard camera
+feeds and colored field-of-view outlines appear inside MuJoCo. Each seeded
+instance varies box yaw, materials, lighting, sensor noise and estimated
+mass/friction; its observations, actual commands, outcome and camera metadata
+are recorded at 50 Hz. See [dataset generation and export](docs/box_training.md).
 
 ## Table reach example
 
