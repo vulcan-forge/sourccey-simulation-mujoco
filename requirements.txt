@@ -1,4 +1,4 @@
-mujoco==3.14.0
+mujoco==4.0.1
 numpy==2.5.3
 scipy==1.18.1
 pillow==12.3.0

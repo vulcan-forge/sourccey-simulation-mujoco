@@ -1,0 +1,9 @@
+{
+  "gravity_feedforward": false,
+  "max_iterations": 60,
+  "parameters": [
+    {"name": "left_lift_kp", "kind": "actuator_kp", "target": "left_shoulder_lift", "initial": 500, "min": 10, "max": 1000},
+    {"name": "left_lift_kv", "kind": "actuator_kv", "target": "left_shoulder_lift", "initial": 35, "min": 1, "max": 100},
+    {"name": "left_elbow_damping", "kind": "joint_damping", "target": "left_elbow_flex", "initial": 2, "min": 0.01, "max": 10}
+  ]
+}

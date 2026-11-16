@@ -9,6 +9,7 @@ from .build import ROLES
 from .cameras import CameraFeeds, save_snapshot
 from .lidar import LidarWindow, save_snapshot as save_lidar_snapshot
 from .simulation import Simulation
+from .rendering import create_renderer
 
 
 def scene_options():
@@ -29,7 +30,7 @@ def render(sim, path):
     from PIL import Image
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    with mujoco.Renderer(sim.model, height=900, width=1200) as renderer:
+    with create_renderer(sim.model, height=900, width=1200) as renderer:
         renderer.update_scene(sim.data, camera=camera(), scene_option=scene_options())
         Image.fromarray(renderer.render()).save(path)
 

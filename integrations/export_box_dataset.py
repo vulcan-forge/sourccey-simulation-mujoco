@@ -68,6 +68,7 @@ def export(source, output, repo_id='local/sourccey-box-pickup-b'):
         video_backend='pyav',encoder_threads=2,rgb_encoder=RGBEncoderConfig(vcodec='h264',preset='fast',crf=20))
     provenance = dict(source=str(source.resolve()),source_manifest_sha256=hashlib.sha256((source/'manifest.json').read_bytes()).hexdigest(),
         synthetic=True,physical_calibration_verified=False,
+        rendering=manifest.get('rendering',dict(renderer='legacy unspecified')),
         units='normalized hardware joint/gripper position targets',
         action_semantics='Targets set after the synchronized observation; terminal row excluded',
         privileged_pose_in_policy_features=False,episodes=[],
@@ -91,7 +92,7 @@ def export(source, output, repo_id='local/sourccey-box-pickup-b'):
                 for container in containers.values(): container.close()
             provenance['episodes'].append(dict(episode_index=index,source_episode=item['episode_id'],split=item['split'],
                 frames=len(arrays['state'])-1,source_transitions_sha256=hashlib.sha256((directory/'transitions.npz').read_bytes()).hexdigest(),
-                camera_calibration=metadata['camera_calibration'],scene=metadata['scene']))
+                camera_calibration=metadata['camera_calibration'],rendering=metadata.get('rendering'),scene=metadata['scene']))
             print(f'Exported {index+1}/{len(selected)}: {item["episode_id"]}',flush=True)
     finally:
         dataset.finalize()

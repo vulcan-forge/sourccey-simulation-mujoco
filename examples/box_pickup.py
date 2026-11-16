@@ -17,6 +17,7 @@ from scipy.spatial import ConvexHull
 from sourccey.build import MODEL, ROOT, ROLES, WHEELS
 from sourccey.collision import add_torso_collision, decomposed_collision, torso_envelopes
 from sourccey.simulation import Simulation
+from sourccey.rendering import create_renderer, provenance
 
 
 DEFAULT_SCENE = ROOT / 'examples/box_pickup_a.json'
@@ -116,13 +117,17 @@ def scene_model(config, *, display_only=False):
             geom.conaffinity |= 2
     spec.option.cone = mujoco.mjtCone.mjCONE_ELLIPTIC
     spec.option.impratio = 5
+    if config.get('physics', {}).get('speculative_contacts', False):
+        if not hasattr(mujoco.mjtEnableBit,'mjENBL_SPECULATIVE'):
+            raise ValueError('Speculative contacts require MuJoCo 4')
+        spec.option.enableflags |= mujoco.mjtEnableBit.mjENBL_SPECULATIVE
     spec.add_equality(name='box_test_fixed_base', type=mujoco.mjtEq.mjEQ_WELD,
                       name1='base_link', name2='world', objtype=mujoco.mjtObj.mjOBJ_BODY,
                       solref=[.002, 1], solimp=[.999, .9999, .001, .5, 2])
     elevator = config['robot_setup']['elevator_m']
     spec.add_equality(name='box_test_fixed_elevator', type=mujoco.mjtEq.mjEQ_JOINT,
                       name1='linear_actuator', objtype=mujoco.mjtObj.mjOBJ_JOINT,
-                      data=[elevator]+[0]*10, solref=[.002, 1], solimp=[.999, .9999, .001, .5, 2])
+                      data=[elevator]+[0]*(mujoco.mjNEQDATA-1), solref=[.002, 1], solimp=[.999, .9999, .001, .5, 2])
     table = config['table']
     depth, across, thick = (table[k]/1000 for k in ('depth_mm', 'length_across_mm', 'thickness_mm'))
     edge, top, cy = measured['near_edge_x_m'], measured['tabletop_z_m'], measured['table_center_y_m']
@@ -161,6 +166,9 @@ def scene_model(config, *, display_only=False):
     spec.body('Gripper_Base_v1_1').add_site(name='box_fixed_contact',
         pos=np.asarray(config['grasp']['fixed_finger_contact_local_mm'])/1000,
         size=[.002], rgba=[0, 1, 0, 1], group=4)
+    if config.get('appearance', {}).get('profile') == 'pbr':
+        from sourccey.appearance import add_box_materials
+        add_box_materials(spec, config.get('seed', 0))
     if 'domain_randomization' in config:
         from examples.box_training import randomize_appearance
         randomize_appearance(spec, config['domain_randomization'])
@@ -396,6 +404,7 @@ class Pickup:
         checks = {name: bool(passed) for name, passed in checks.items()}
         return dict(test=self.config['test'], simulation_only=True, passed=bool(all(checks.values())), checks=checks,
             scene=self.config, layout=self.layout, physics_timestep_s=self.m.opt.timestep,
+            rendering=provenance(),
             simulated_duration_s=float(self.d.time), box_final_center_m=self.d.xpos[self.box].tolist(),
             minimum_bottom_clearance_during_hold_mm=(minimum_bottom-self.layout['tabletop_z_m'])*1000,
             hold_drift_mm=hold_drift*1000, minimum_finger_normal_force_during_hold_n=minimum_forces,
@@ -431,7 +440,8 @@ def physics_signature(config):
     digest.update(mujoco.__version__.encode())
     for path in (Path(__file__), MODEL, ROOT/'sourccey/collision.py', ROOT/'sourccey/simulation.py',
                  ROOT/'sourccey/pose.py', ROOT/'models/collision/manifest.json',
-                 ROOT/'examples/box_training.py', ROOT/'models/source/camera_poses.json'):
+                 ROOT/'examples/box_training.py', ROOT/'models/source/camera_poses.json',
+                 ROOT/'sourccey/appearance.py'):
         digest.update(path.read_bytes())
     return digest.hexdigest()
 
@@ -440,6 +450,11 @@ def save_run(run, report, output=OUTPUT):
     output = Path(output)
     output.mkdir(parents=True, exist_ok=True)
     (output/'report.json').write_text(json.dumps(report, indent=2, allow_nan=False)+'\n', encoding='utf-8')
+    import copy
+    exported = copy.copy(run.m)
+    # Per-step ideal gravity support is controller state, not a constant bias.
+    exported.actuator_biasprm[:,0] = 0
+    mujoco.mj_saveModel(exported,str(output/'model.mjb'),None)
     np.savez_compressed(output/'recording.npz', time=np.asarray([r[0] for r in run.frames]),
         qpos=np.asarray([r[1] for r in run.frames]), phase=np.asarray([r[2] for r in run.frames]),
         config=np.asarray(json.dumps(run.config)), signature=np.asarray(physics_signature(run.config)))
@@ -460,8 +475,16 @@ def render(run, path, detail=False):
     from PIL import Image
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    with mujoco.Renderer(run.m, height=720, width=960) as renderer:
-        renderer.update_scene(run.d, camera=camera(detail), scene_option=options())
+    model,data = run.m,run.d
+    if any(model.geom(i).name.startswith('collision_') for i in range(model.ngeom)):
+        model,_ = scene_model(run.config,display_only=True)
+        data = mujoco.MjData(model)
+        data.qpos[:] = run.d.qpos
+        mujoco.mj_kinematics(model,data)
+        mujoco.mj_comPos(model,data)
+        mujoco.mj_camlight(model,data)
+    with create_renderer(model, height=720, width=960) as renderer:
+        renderer.update_scene(data, camera=camera(detail), scene_option=options())
         Image.fromarray(renderer.render()).save(path)
 
 
@@ -478,7 +501,7 @@ def playback(sim, recording, report, speed=1., camera_feeds=False):
         if keycode in (ord('C'), ord('c')): state['feeds'] = not state['feeds']
         if keycode in (ord('F'), ord('f')): state['frusta'] = not state['frusta']
     with ExitStack() as stack:
-        renderer = stack.enter_context(mujoco.Renderer(sim.model,height=SIZE[1],width=SIZE[0]))
+        renderer = stack.enter_context(create_renderer(sim.model,height=SIZE[1],width=SIZE[0]))
         window = stack.enter_context(viewer.launch_passive(sim.model, sim.data, key_callback=key))
         window.cam.lookat[:] = camera().lookat
         window.cam.distance, window.cam.azimuth, window.cam.elevation = camera().distance, camera().azimuth, camera().elevation
@@ -534,11 +557,22 @@ def main():
     parser.add_argument('--view', action='store_true')
     parser.add_argument('--replay', action='store_true', help='Play the previously saved physics recording')
     parser.add_argument('--camera-feeds',action='store_true',help='Show four onboard camera tiles and field-of-view outlines')
+    parser.add_argument('--renderer',choices=('classic','filament'),help='Camera/image renderer; default SOURCCEY_RENDERER or classic')
+    parser.add_argument('--pbr',action='store_true',help='Procedural cardboard, wood and robot materials')
+    parser.add_argument('--speculative',action='store_true',help='Enable MuJoCo 4 speculative contacts, retaining the 2 ms timestep')
+    parser.add_argument('--studio',action='store_true',help='Review in MuJoCo Studio with four Filament camera feeds')
     parser.add_argument('--speed', type=float, default=1., help='Display speed only; physics is unchanged')
     args = parser.parse_args()
+    if args.renderer:
+        import os
+        os.environ['SOURCCEY_RENDERER'] = args.renderer
     if not np.isfinite(args.speed) or args.speed <= 0:
         parser.error('Display speed must be positive and finite')
     config = load_scene(args.scene)
+    if args.pbr:
+        config['appearance'] = dict(profile='pbr', calibration='estimated procedural appearance')
+    if args.speculative:
+        config['physics'] = dict(speculative_contacts=True)
     if args.replay:
         try:
             recording, report = load_recording(args.output, config)
@@ -563,7 +597,10 @@ def main():
         recording = dict(time=np.asarray([r[0] for r in run.frames]), qpos=np.asarray([r[1] for r in run.frames]),
                          phase=np.asarray([r[2] for r in run.frames]))
         sim = run.sim
-    if args.view:
+    if args.studio:
+        from examples.studio_review import review
+        review(args.output,speed=args.speed)
+    elif args.view:
         # Use visible CAD for display; the measured result came from full physics.
         model,_ = scene_model(config,display_only=True)
         if model.nq != sim.model.nq:

@@ -5,6 +5,11 @@ shoulder elevator, and four driven mecanum wheels.
 
 Licensed under the [MIT License](LICENSE). Copyright (c) 2026 Vulcan Robotics.
 
+MuJoCo **4.0.1** is the current dependency. For the separate migration environment,
+Filament camera rendering, Studio experiment review, parallel generation and
+offline physics fitting, see [MuJoCo 4 setup and workflow](docs/mujoco4.md).
+Run `setup-mujoco4.cmd` to preserve an existing 3.x `.venv` for comparison.
+
 ![Sourccey in MuJoCo](docs/preview.png)
 
 ## Run

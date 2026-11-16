@@ -17,6 +17,7 @@ from PIL import Image, ImageDraw
 
 from sourccey.build import ROOT, ROLES
 from sourccey.simulation import Simulation
+from sourccey.rendering import create_renderer, provenance
 
 
 CAMERAS = ('front_left', 'front_right', 'wrist_left', 'wrist_right')
@@ -70,11 +71,14 @@ def instances(base, count=10, seed=20261116):
 def randomize_appearance(spec, parameters):
     """Materials and lighting only; collision geometry is never changed here."""
     seed = parameters['seed']
+    pbr = any(material.name.startswith('pbr_') for material in spec.materials)
     for index, key in enumerate(('box_rgb', 'table_rgb', 'arm_rgb', 'hand_rgb', 'floor_rgb')):
         color = np.asarray(parameters[key])
         style = parameters['texture_style']
         yy,xx = np.mgrid[:64,:64]
-        if style == 0:
+        if pbr:
+            factor = 0.94+0.06*np.sin(xx*.7+np.sin(yy*.15)) if index == 1 else np.ones((64,64))
+        elif style == 0:
             factor = np.where((xx//8+yy//8)%2,1.,.70)
         elif style == 1:
             factor = .70+.30*xx/63
@@ -100,6 +104,9 @@ def randomize_appearance(spec, parameters):
         light.dir = parameters['light_direction']
         light.diffuse = parameters['light_diffuse']
         light.ambient = parameters['light_ambient']
+    if any(material.name.startswith('pbr_') for material in spec.materials):
+        from sourccey.appearance import randomize_pbr
+        randomize_pbr(spec, parameters)
 
 
 def photometric(image, config, camera_index, frame_index):
@@ -197,6 +204,7 @@ class EpisodeRecorder:
             privileged_labels=['box_pose','camera_position','camera_rotation','phase','qpos','qvel','ctrl'],
             passed=bool(report['passed']), split=self.run.config.get('split','train'),
             eligible_for_imitation=bool(report['passed']),
+            rendering=provenance(),
             camera_calibration=camera_manifest(self.run.m,self.run.d), scene=self.run.config)
         (directory/'episode.json').write_text(json.dumps(metadata,indent=2,allow_nan=False)+'\n',encoding='utf-8')
         return arrays,metadata
@@ -205,6 +213,9 @@ class EpisodeRecorder:
 def render_camera_frames(model, data, renderer, config, index):
     from examples.box_pickup import options
     result = {}
+    if hasattr(renderer, 'render_many'):
+        frames = renderer.render_many(data, CAMERAS, options())
+        return {name: photometric(frames[name],config,ci,index) for ci,name in enumerate(CAMERAS)}
     for ci,name in enumerate(CAMERAS):
         renderer.update_scene(data,camera=name,scene_option=options())
         result[name] = photometric(renderer.render(),config,ci,index)
@@ -241,7 +252,7 @@ def write_videos(run, arrays, directory):
                 '-framerate',str(FPS),'-i','pipe:0','-an','-c:v','libx264','-preset','fast',
                 '-crf','18','-pix_fmt','yuv420p','-threads','1',str(video_dir/f'{name}.mp4')],
                 stdin=subprocess.PIPE,stdout=subprocess.DEVNULL,stderr=log,creationflags=creation)
-        with mujoco.Renderer(run.m,height=SIZE[1],width=SIZE[0]) as renderer:
+        with create_renderer(run.m,height=SIZE[1],width=SIZE[0]) as renderer:
             for i,qpos in enumerate(arrays['qpos']):
                 run.d.qpos[:] = qpos
                 mujoco.mj_kinematics(run.m,run.d)
@@ -313,7 +324,7 @@ def review(output=OUTPUT, speed=1.):
         state.update(change=False,position=0.)
         last = time.perf_counter()
         next_camera = 0.
-        renderer = mujoco.Renderer(model,height=SIZE[1],width=SIZE[0])
+        renderer = create_renderer(model,height=SIZE[1],width=SIZE[0])
         try:
             with viewer.launch_passive(model,sim.data,key_callback=key,show_left_ui=False,show_right_ui=False) as window:
                 window.opt.geomgroup[3] = 0
@@ -361,53 +372,77 @@ def review(output=OUTPUT, speed=1.):
             renderer.close()
 
 
-def generate(count=10, seed=20261116, output=OUTPUT, videos=True):
-    from examples.box_pickup import Pickup,load_scene,save_run,render,scene_model
+def record_instance(config, directory):
+    """CPU-only worker; no graphics contexts, network connections or shared models."""
+    from examples.box_pickup import Pickup,save_run
+    directory = Path(directory)
+    run = Pickup(config)
+    recorder = EpisodeRecorder(run)
+    run.before_step = recorder.capture
+    try:
+        report = run.run()
+    except (RuntimeError,ValueError) as exc:
+        report = run.report()
+        report.update(passed=False,error=str(exc))
+    save_run(run,report,directory)
+    _,metadata = recorder.finish(report,directory)
+    return report,metadata
+
+
+def generate(count=10, seed=20261116, output=OUTPUT, videos=True, pbr=False, jobs=1):
+    from examples.box_pickup import load_scene,render,scene_model
     from types import SimpleNamespace
+    from contextlib import ExitStack
+    from concurrent.futures import ProcessPoolExecutor
+    if not 1 <= jobs <= 4:
+        raise ValueError('CPU worker count must be 1..4; collision models consume substantial memory')
     output = Path(output)
     output.mkdir(parents=True,exist_ok=True)
     configs = instances(load_scene(),count,seed)
+    if pbr:
+        for config in configs:
+            config['appearance'] = dict(profile='pbr', calibration='estimated procedural appearance')
     if (output/'manifest.json').exists():
         raise FileExistsError('Choose a new output directory to preserve the previous batch and its failures')
     manifest = dict(version=1,test='B',seed=seed,episodes=[],simulation_only=True,
         instruction='Pick up the cardboard box and hold it above the table.',fps=FPS,
-        camera_names=list(CAMERAS),state_names=list(STATE_NAMES),physical_calibration_verified=False)
-    for index,config in enumerate(configs):
+        camera_names=list(CAMERAS),state_names=list(STATE_NAMES),physical_calibration_verified=False,
+        rendering=provenance())
+    for config in configs:
         directory = output/config['episode_id']
         if directory.exists():
             raise FileExistsError(f'Episode already exists: {directory}')
         directory.mkdir()
         (directory/'scene.json').write_text(json.dumps(config,indent=2)+'\n',encoding='utf-8')
-        print(f'Instance {index+1}/{count}: yaw {config["box_pose"]["yaw_deg"]:+.2f}, seed {config["seed"]}',flush=True)
-        run = Pickup(config)
-        recorder = EpisodeRecorder(run)
-        run.before_step = recorder.capture
-        try:
-            report = run.run()
-        except (RuntimeError,ValueError) as exc:
-            report = run.report()
-            report.update(passed=False,error=str(exc))
-        save_run(run,report,directory)
-        arrays,metadata = recorder.finish(report,directory)
-        display_model,_ = scene_model(config,display_only=True)
-        display = Simulation(model=display_model,traction=False)
-        if display_model.nq != run.m.nq:
-            raise RuntimeError('Display and physics joint layouts differ')
-        display.data.qpos[:] = arrays['qpos'][-1]
-        mujoco.mj_forward(display_model,display.data)
-        displayed = SimpleNamespace(m=display_model,d=display.data,config=config)
-        render(displayed,directory/'final.png')
-        render(displayed,directory/'grasp_detail.png',detail=True)
-        if videos:
-            write_videos(displayed,arrays,directory)
-        # Also capture the initial/final four views for inspection without a player.
-        manifest['episodes'].append(dict(episode_id=config['episode_id'],seed=config['seed'],
-            yaw_deg=config['box_pose']['yaw_deg'],passed=report['passed'],split=config['split'],
-            frames=metadata['frames'],eligible_for_imitation=metadata['eligible_for_imitation'],videos=videos,
-            minimum_hold_clearance_mm=report['minimum_bottom_clearance_during_hold_mm']))
-        (output/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf-8')
-        print(f'  {"PASS" if report["passed"] else "FAIL"}: clearance {report["minimum_bottom_clearance_during_hold_mm"]:.1f} mm',flush=True)
-        del recorder,run,display,displayed,display_model
+    with ExitStack() as stack:
+        executor = stack.enter_context(ProcessPoolExecutor(max_workers=jobs)) if jobs > 1 else None
+        futures = ([executor.submit(record_instance,c,output/c['episode_id']) for c in configs]
+                   if executor else None)
+        for index,config in enumerate(configs):
+            directory = output/config['episode_id']
+            print(f'Instance {index+1}/{count}: yaw {config["box_pose"]["yaw_deg"]:+.2f}, seed {config["seed"]}',flush=True)
+            report,metadata = futures[index].result() if futures else record_instance(config,directory)
+            with np.load(directory/'transitions.npz',allow_pickle=False) as archive:
+                arrays = {key:archive[key].copy() for key in archive.files}
+            display_model,_ = scene_model(config,display_only=True)
+            display = Simulation(model=display_model,traction=False)
+            if display_model.nq != arrays['qpos'].shape[1]:
+                raise RuntimeError('Display and physics joint layouts differ')
+            display.data.qpos[:] = arrays['qpos'][-1]
+            mujoco.mj_forward(display_model,display.data)
+            displayed = SimpleNamespace(m=display_model,d=display.data,config=config)
+            render(displayed,directory/'final.png')
+            render(displayed,directory/'grasp_detail.png',detail=True)
+            if videos:
+                write_videos(displayed,arrays,directory)
+            # Also capture the initial/final four views for inspection without a player.
+            manifest['episodes'].append(dict(episode_id=config['episode_id'],seed=config['seed'],
+                yaw_deg=config['box_pose']['yaw_deg'],passed=report['passed'],split=config['split'],
+                frames=metadata['frames'],eligible_for_imitation=metadata['eligible_for_imitation'],videos=videos,
+                minimum_hold_clearance_mm=report['minimum_bottom_clearance_during_hold_mm']))
+            (output/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf-8')
+            print(f'  {"PASS" if report["passed"] else "FAIL"}: clearance {report["minimum_bottom_clearance_during_hold_mm"]:.1f} mm',flush=True)
+            del display,displayed,display_model
     contact_sheet(output,manifest)
     print(json.dumps(manifest,indent=2),flush=True)
     return manifest
@@ -435,10 +470,16 @@ def main():
     parser.add_argument('--view',action='store_true',help='Review the generated batch after recording')
     parser.add_argument('--no-video',action='store_true',help='Physics-only diagnostic batch; not an image training dataset')
     parser.add_argument('--speed',type=float,default=1.)
+    parser.add_argument('--renderer',choices=('classic','filament'),help='Camera/image renderer; default SOURCCEY_RENDERER or classic')
+    parser.add_argument('--pbr',action='store_true',help='Procedural materials with seeded roughness variation')
+    parser.add_argument('--jobs',type=int,default=1,choices=range(1,5),help='Independent CPU physics workers; GPU rendering stays in the parent process')
     args = parser.parse_args()
+    if args.renderer:
+        import os
+        os.environ['SOURCCEY_RENDERER'] = args.renderer
     if not np.isfinite(args.speed) or args.speed <= 0: parser.error('Speed must be positive and finite')
     if not args.review:
-        generate(args.count,args.seed,args.output,videos=not args.no_video)
+        generate(args.count,args.seed,args.output,videos=not args.no_video,pbr=args.pbr,jobs=args.jobs)
     if args.review or args.view:
         review(args.output,args.speed)
 

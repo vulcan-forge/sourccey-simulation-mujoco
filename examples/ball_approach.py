@@ -59,7 +59,7 @@ def scene_model(config):
     if not np.isfinite(elevator) or not bounds[0] <= elevator <= bounds[1]:
         raise ValueError("elevator_m outside model limits")
     spec.add_equality(name="benchmark_fixed_elevator", type=mujoco.mjtEq.mjEQ_JOINT,
-                      name1="linear_actuator", data=[elevator] + [0] * 10,
+                      name1="linear_actuator", data=[elevator] + [0] * (mujoco.mjNEQDATA-1),
                       objtype=mujoco.mjtObj.mjOBJ_JOINT,
                       solref=[.002, 1], solimp=[.999, .9999, .001, .5, 2])
     half = vector(config["table_half_size_mm"], 2) / 1000

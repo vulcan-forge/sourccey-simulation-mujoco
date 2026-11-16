@@ -101,3 +101,17 @@ def test_b_curriculum_rejects_unvalidated_large_yaw():
     config['box_pose']['yaw_deg'] = 30
     with pytest.raises(ValueError,match='15'):
         validate(config)
+
+
+def test_pbr_materials_preserve_physics_and_camera_calibration(display):
+    config,original,_ = display
+    config = copy.deepcopy(config)
+    config['appearance'] = dict(profile='pbr')
+    pbr,_ = scene_model(config,display_only=True)
+    repeated,_ = scene_model(config,display_only=True)
+    np.testing.assert_array_equal(pbr.body_mass,original.body_mass)
+    np.testing.assert_array_equal(pbr.geom_size,original.geom_size)
+    np.testing.assert_array_equal(pbr.cam_quat,original.cam_quat)
+    np.testing.assert_array_equal(pbr.tex_data,repeated.tex_data)
+    assert pbr.mat_roughness[pbr.material('episode_material_0').id] >= .6
+    assert pbr.mat_metallic[pbr.material('pbr_metal').id] == pytest.approx(.8)

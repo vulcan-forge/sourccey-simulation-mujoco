@@ -3,6 +3,7 @@ from pathlib import Path
 import time
 
 import mujoco
+from .rendering import create_renderer
 from PIL import Image, ImageDraw
 
 
@@ -16,9 +17,11 @@ def render_tiled(model, data, renderer):
     width, height = FEED_SIZE
     image = Image.new("RGB", (width * 3, (height + LABEL_HEIGHT) * 2), (15, 18, 20))
     draw = ImageDraw.Draw(image)
+    frames = renderer.render_many(data,CAMERAS) if hasattr(renderer,'render_many') else None
     for index, name in enumerate(CAMERAS):
-        renderer.update_scene(data, camera=name)
-        tile = Image.fromarray(renderer.render())
+        if frames is None:
+            renderer.update_scene(data, camera=name)
+        tile = Image.fromarray(frames[name] if frames is not None else renderer.render())
         x = (index % 3) * width
         y = (index // 3) * (height + LABEL_HEIGHT)
         image.paste(tile, (x, y + LABEL_HEIGHT))
@@ -29,7 +32,7 @@ def render_tiled(model, data, renderer):
 def save_snapshot(model, data, path):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    with mujoco.Renderer(model, height=FEED_SIZE[1], width=FEED_SIZE[0]) as renderer:
+    with create_renderer(model, height=FEED_SIZE[1], width=FEED_SIZE[0]) as renderer:
         render_tiled(model, data, renderer).save(path)
 
 
@@ -49,7 +52,7 @@ class CameraFeeds:
         self.label.pack()
         self.image = None
         self.next_frame = 0.0
-        self.renderer = mujoco.Renderer(simulation.model, height=FEED_SIZE[1], width=FEED_SIZE[0])
+        self.renderer = create_renderer(simulation.model, height=FEED_SIZE[1], width=FEED_SIZE[0])
         self.window.protocol("WM_DELETE_WINDOW", self.close)
 
     def update(self):
