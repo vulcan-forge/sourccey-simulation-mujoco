@@ -13,6 +13,8 @@ Run `setup-mujoco4.cmd` to preserve an existing 3.x `.venv` for comparison.
 For full-path validation of different box positions and progressively wider
 rotations, see [the stage C workspace map](docs/box_workspace.md). The selected
 model for the later training phase is **X-VLA**; workspace validation does not train it.
+The next [X-VLA dataset pilot](docs/box_xvla_pilot.md) records randomized successful
+pickups in LeRobot format with the task **"Pick up the box"**.
 
 ![Sourccey in MuJoCo](docs/preview.png)
 
@@ -345,6 +347,12 @@ These are software acceptance results, not measured hardware agreement:
 ![Both elbows bent to −135°](docs/elbows_down.png)
 - Opening the MJCF elsewhere preserves articulation and normal contact, but
   **traction and bias compensation require this Python simulation loop**.
+
+The [Box Workshop](docs/workshop.md) is a keyboard-controlled four-table sandbox.
+Launch `./workshop.cmd`; see [the simple controls](WORKSHOP_COMMANDS.md).
+
+The [X-VLA training handoff](docs/box_xvla_training.md) packages the box dataset,
+the inspected LeRobot source and an eight-hour two-RTX-5090 training workflow.
 
 References: official [MuJoCo Python API](https://mujoco.readthedocs.io/en/stable/python.html),
 [URDF modeling guidance](https://mujoco.readthedocs.io/en/stable/modeling.html#urdf-extensions),

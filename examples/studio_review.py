@@ -7,7 +7,7 @@ import time
 import numpy as np
 
 
-def review(output, *, speed=1., seconds=0., gfx='opengl', hot_reload=False):
+def review(output, *, speed=1., seconds=0., gfx='opengl', hot_reload=False, model_transform=None):
     from mujoco.studio import app, launch_passive, viewer_protocol
     from sourccey.simulation import Simulation
     from sourccey.studio_review import RecordedExperiment,ExperimentPanel,NativePresentation
@@ -16,6 +16,8 @@ def review(output, *, speed=1., seconds=0., gfx='opengl', hot_reload=False):
     report = json.loads((output/'report.json').read_text(encoding='utf-8'))
     recording,report = load_recording(output,report['scene'])
     model,_ = scene_model(report['scene'],display_only=True)
+    if model_transform is not None:
+        model_transform(model,report['scene'])
     sim = Simulation(model=model,traction=False)
     player = RecordedExperiment(model,sim.data,recording,report,speed)
     config = viewer_protocol.ViewerConfig(title='Sourccey | MuJoCo 4 Studio',gfx=gfx,

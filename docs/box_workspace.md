@@ -10,6 +10,10 @@ examples remain historical pipeline checks; this workflow does not invoke them.
 Model integration, large-scale demonstrations and policy evaluation are later
 steps after reviewing this workspace map.
 
+The subsequent [X-VLA dataset pilot](box_xvla_pilot.md) now uses these validated
+anchors for randomized demonstrations and LeRobot export with the task
+`Pick up the box`; it rechecks every candidate before accepting it.
+
 ## Run and review
 
 ```bash
