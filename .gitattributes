@@ -4,3 +4,6 @@ tests/fixtures/host_shoulder_safety_e0f59382.py text eol=lf whitespace=-blank-at
 integrations/true_calibration_reference/*.txt text eol=lf whitespace=-blank-at-eof
 models/collision/*.npz binary
 tests/fixtures/host_before_buffered.py text eol=lf
+*.sh text eol=lf
+# This calibration input is fingerprinted byte-for-byte in episode metadata.
+handoff/linux/robot_joint_mapping.json -text whitespace=cr-at-eol

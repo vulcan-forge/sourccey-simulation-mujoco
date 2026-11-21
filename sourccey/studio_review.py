@@ -186,7 +186,7 @@ class ExperimentPanel(plugin.ViewerPlugin):
                 moved, value = imgui.SliderFloat('Time', self.status.position,0.,self.status.duration,'%.2f s')
                 if moved:
                     seek = value
-                imgui.TextUnformatted(f'{self.status.phase} | Physics: {"PASS" if self.status.passed else "FAIL"}')
+                imgui.TextUnformatted(f'{self.status.phase} | Outcome: {"PASS" if self.status.passed else "FAIL"}')
             if changed or speed_changed or seek is not None:
                 self.viewer.send_to_sim(PlaybackCommand(self.paused,self.speed,seek))
             _, self.frusta = imgui.Checkbox('Camera frusta',self.frusta)

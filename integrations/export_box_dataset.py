@@ -133,6 +133,11 @@ def export(source, output, repo_id='local/sourccey-box-pickup-b', policy=None, x
                     or not all(report['workspace_validation']['checks'].values())
                     or metadata['instruction'] != manifest['instruction']):
                 raise ValueError('Pilot episode failed physics checks or task consistency')
+            if manifest.get('collection') == 'continuous-pick-place-v1':
+                expected=manifest['plan']['sampling']['placement']
+                if (not report.get('placement',{}).get('passed')
+                        or metadata['scene'].get('placement') != expected):
+                    raise ValueError('Pick-and-place export requires verified placement at the frozen destination')
     features = {
         'observation.state':dict(dtype='float32',shape=(6,),names=manifest['state_names']),
         'action':dict(dtype='float32',shape=(6,),names=manifest['state_names']),
@@ -148,6 +153,15 @@ def export(source, output, repo_id='local/sourccey-box-pickup-b', policy=None, x
         action_semantics='Targets set after the synchronized observation; terminal row excluded',
         privileged_pose_in_policy_features=False,episodes=[],
         excluded_failed_episodes=[i['episode_id'] for i in manifest['episodes'] if not i['eligible_for_imitation']])
+    if manifest.get('collection') == 'continuous-pick-place-v1':
+        provenance['task_contract'] = dict(placement=manifest['plan']['sampling']['placement'],
+            minimum_transport_mm=manifest['plan']['sampling']['minimum_transport_mm'],
+            minimum_carry_clearance_mm=manifest['plan']['sampling']['minimum_carry_clearance_mm'])
+        provenance['sampling_plan'] = manifest['plan']
+        provenance['split_strategy'] = manifest['split_strategy']
+        provenance['coverage'] = manifest['coverage']
+        if manifest.get('experiment'):
+            provenance['contact_experiment'] = manifest['experiment']
     try:
         for index,item in enumerate(selected):
             directory = source/item['episode_id']

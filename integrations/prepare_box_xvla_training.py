@@ -17,7 +17,9 @@ def prepare(dataset, lerobot_repo, output):
         raise FileExistsError(f"Choose a fresh bundle directory: {output}")
     mapping = ROOT / "artifacts/robot_joint_mapping.json"
     cameras = ROOT / "models/source/camera_poses.json"
-    robot_plugin = lerobot_repo.parent / "lerobot-robot-sourccey"
+    robot_plugin = lerobot_repo.parent / "packages/lerobot-robot-sourccey"
+    if not (robot_plugin / "pyproject.toml").is_file():
+        robot_plugin = lerobot_repo.parent / "lerobot-robot-sourccey"
     if not (robot_plugin / "pyproject.toml").is_file():
         raise FileNotFoundError("The fork lockfile requires the local lerobot-robot-sourccey package")
     tokenizer = ROOT / "artifacts/xvla_setup/bart_tokenizer"
@@ -34,7 +36,8 @@ def prepare(dataset, lerobot_repo, output):
         if metadata["mapping_sha256"] != raw_mapping_hash:
             raise ValueError("Current mapping differs from the dataset's source mapping")
     revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=lerobot_repo, text=True).strip()
-    manifest = dict(format="sourccey-box-xvla-training-v1", task="Pick up the box",
+    manifest = dict(format="sourccey-box-xvla-training-v1", task=provenance["task"],
+        task_contract=provenance.get("task_contract"), split_strategy=provenance.get("split_strategy", "held-out location groups"),
         pretrained_model=BASE_MODEL, pretrained_revision=BASE_REVISION,
         lerobot_revision=revision, lerobot_source_sha256=audit,
         mapping_sha256=raw_mapping_hash, mapping_normalized_text_sha256=mapping_hash,

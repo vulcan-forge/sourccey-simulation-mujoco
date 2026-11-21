@@ -16,6 +16,7 @@ import types
 import numpy as np
 
 TASK='Pick up the box'
+PLACE_TASK='Pick up the box and place it at the fixed destination'
 CAMERAS=('front_left','front_right','wrist_left','wrist_right')
 
 
@@ -82,7 +83,8 @@ def check(root,tokenizer,steps=3):
     splits=json.loads((root/'episode_splits.json').read_text(encoding='utf-8'))
     training=json.loads((root/'xvla_train.json').read_text(encoding='utf-8'))
     info=json.loads((root/'meta/info.json').read_text(encoding='utf-8'))
-    if provenance['task']!=TASK or set(splits)!= {'train','validation','test'}:
+    task=provenance['task']
+    if task not in (TASK,PLACE_TASK) or set(splits)!= {'train','validation','test'}:
         raise ValueError('Task or three-way splits do not match the pilot')
     if training['dataset']['episodes']!=splits['train']:
         raise ValueError('Training configuration leaks held-out episodes')
@@ -111,7 +113,7 @@ def check(root,tokenizer,steps=3):
         starts[episode['episode_index']]=offset
         for frame in (0,episode['frames']//2,episode['frames']-1):
             sample=dataset[offset+frame]
-            if sample['task']!=TASK:
+            if sample['task']!=task:
                 raise ValueError('Wrong task text in LeRobot data')
             for name in CAMERAS:
                 image=sample['observation.images.'+name]
@@ -175,7 +177,7 @@ def check(root,tokenizer,steps=3):
         output=postprocessor(policy.select_action(held_out))
     if output.shape!=(len(splits['validation'][:1]),6) or not torch.isfinite(output).all() or not torch.isfinite(held_out_loss):
         raise ValueError('X-VLA held-out loss or six-channel output is invalid')
-    report=dict(passed=True,task=TASK,policy='X-VLA',dataset_episodes=dataset.num_episodes,
+    report=dict(passed=True,task=task,policy='X-VLA',dataset_episodes=dataset.num_episodes,
         dataset_frames=len(dataset),images_checked=dataset.num_episodes*3*4,
         split_episodes={k:len(v) for k,v in splits.items()},train_episode_ids=splits['train'],
         validation_episode_ids=splits['validation'],test_episode_ids=splits['test'],

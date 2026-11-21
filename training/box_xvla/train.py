@@ -22,6 +22,7 @@ HERE = Path(__file__).resolve().parent
 BASE_MODEL = "lerobot/xvla-base"
 BASE_REVISION = "cdb7964e4fe842935d671bfab5a5ebe00a96648c"
 TASK = "Pick up the box"
+PLACE_TASK = "Pick up the box and place it at the fixed destination"
 CAMERAS = ("front_left", "front_right", "wrist_left", "wrist_right")
 JOINTS = tuple("left_" + name + ".pos" for name in (
     "shoulder_pan", "shoulder_lift", "elbow_flex", "wrist_flex", "wrist_roll", "gripper"))
@@ -49,8 +50,10 @@ def validate_dataset(root):
     info = read_json(root / "meta/info.json")
     splits = read_json(root / "episode_splits.json")
     provenance = read_json(root / "simulation_provenance.json")
-    if info["fps"] != 50 or provenance["task"] != TASK:
-        raise ValueError("Require the 50 Hz 'Pick up the box' dataset")
+    if info["fps"] != 50 or provenance["task"] not in (TASK, PLACE_TASK):
+        raise ValueError("Require a supported 50 Hz box task dataset")
+    if provenance["task"] == PLACE_TASK and not provenance.get("task_contract", {}).get("placement"):
+        raise ValueError("Pick-and-place data must record the fixed destination and placement checks")
     if set(splits) != {"train", "validation", "test"}:
         raise ValueError("Require explicit train/validation/test episode lists")
     flat = sum((splits[s] for s in ("train", "validation", "test")), [])

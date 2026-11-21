@@ -9,3 +9,15 @@ build/
 dist/
 SourcceyMuJoCo.exe
 *.spec.bak
+# Local training runs, model weights, datasets and dependency checkouts.
+xvla_sourccey_box_sim_b4/
+outputs/
+checkpoints/
+datasets/
+.cache/
+.env
+.env.*
+*.safetensors
+*.pt
+*.pth
+*.ckpt

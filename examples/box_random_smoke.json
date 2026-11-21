@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "depth_edges_mm": [100, 120],
+  "lateral_edges_mm": [125, 140],
+  "yaw_range_deg": [-6, 6],
+  "yaw_bins": 2,
+  "minimum_transport_mm": 40,
+  "minimum_carry_clearance_mm": 20,
+  "placement": {
+    "center_from_near_edge_mm": 110,
+    "center_left_of_robot_mm": 180,
+    "position_tolerance_mm": 15,
+    "table_height_tolerance_mm": 3,
+    "maximum_tilt_deg": 12,
+    "maximum_released_finger_force_n": 0.1,
+    "minimum_table_force_n": 0.1,
+    "settle_seconds": 1,
+    "maximum_settle_drift_mm": 3
+  }
+}

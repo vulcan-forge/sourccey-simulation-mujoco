@@ -46,6 +46,19 @@ def test_two_gpu_training_preserves_checkpoint_and_robot_contract(dataset, tmp_p
     assert read_json(dataset / "xvla_train.json")["policy"]["florence_config"] == policy["florence_config"]
 
 
+def test_training_accepts_pick_and_place_only_with_destination_contract(dataset):
+    path = dataset/'simulation_provenance.json'
+    provenance = json.loads(path.read_text())
+    provenance['task'] = 'Pick up the box and place it at the fixed destination'
+    path.write_text(json.dumps(provenance))
+    with pytest.raises(ValueError, match='fixed destination'):
+        validate_dataset(dataset)
+    provenance['task_contract'] = dict(placement=dict(center_from_near_edge_mm=110,
+        center_left_of_robot_mm=180, position_tolerance_mm=15))
+    path.write_text(json.dumps(provenance))
+    assert validate_dataset(dataset)[2]['task'] == provenance['task']
+
+
 def read_json(path):
     return json.loads(path.read_text(encoding="utf-8"))
 
